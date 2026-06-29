@@ -1,0 +1,1201 @@
+merchant_key,location_key,merchant_id,merchant_name,merchant_category,merchant_size,opened_date_key
+1,1,MER000001,Fathalla Market - Cairo #1,Grocery,Mid-Market,20231213
+2,8,MER000002,LC Waikiki - Port Said #1,Fashion,Enterprise,20230224
+3,1,MER000003,B.TECH - Cairo #1,Electronics,Enterprise,20230526
+4,2,MER000004,Talabat - Giza #1,E-commerce,Enterprise,20240815
+5,2,MER000005,Shell - Giza #1,Fuel,Enterprise,20241210
+6,2,MER000006,2B - Giza #1,Electronics,Mid-Market,20240210
+7,1,MER000007,McDonald's - Cairo #1,Restaurants,Enterprise,20231227
+8,2,MER000008,Emarat Misr - Giza #1,Fuel,Enterprise,20231129
+9,1,MER000009,Mobaco - Cairo #1,Fashion,Mid-Market,20230531
+10,17,MER000010,Misr Petroleum - Sharm El Sheikh #1,Fuel,Enterprise,20231029
+11,1,MER000011,Cook Door - Cairo #1,Restaurants,Mid-Market,20241008
+12,1,MER000012,ADNOC - Cairo #1,Fuel,Enterprise,20230216
+13,1,MER000013,Starbucks - Cairo #1,Restaurants,Enterprise,20240827
+14,3,MER000014,Mobaco - Alexandria #1,Fashion,Mid-Market,20231026
+15,1,MER000015,LC Waikiki - Cairo #1,Fashion,Enterprise,20240530
+16,1,MER000016,Spinneys - Cairo #1,Grocery,Enterprise,20230918
+17,1,MER000017,ADNOC - Cairo #2,Fuel,Enterprise,20241108
+18,1,MER000018,Mobaco - Cairo #2,Fashion,Mid-Market,20230102
+19,1,MER000019,GAD - Cairo #1,Restaurants,Mid-Market,20230619
+20,1,MER000020,Max Fashion - Cairo #1,Fashion,Enterprise,20240929
+21,1,MER000021,ADNOC - Cairo #3,Fuel,Enterprise,20240627
+22,1,MER000022,B.TECH - Cairo #2,Electronics,Enterprise,20240614
+23,9,MER000023,Town Team - Asyut #1,Fashion,Mid-Market,20240324
+24,3,MER000024,Max Fashion - Alexandria #1,Fashion,Enterprise,20240630
+25,1,MER000025,Starbucks - Cairo #2,Restaurants,Enterprise,20231218
+26,16,MER000026,Emarat Misr - Aswan #1,Fuel,Enterprise,20240920
+27,1,MER000027,Compu Me - Cairo #1,Electronics,SME,20231215
+28,1,MER000028,Gourmet Egypt - Cairo #1,Grocery,SME,20240519
+29,1,MER000029,Mo'men - Cairo #1,Restaurants,Mid-Market,20230321
+30,2,MER000030,Noon - Giza #1,E-commerce,Enterprise,20230325
+31,4,MER000031,Kheir Zaman - Shubra El Kheima #1,Grocery,Mid-Market,20240809
+32,3,MER000032,Misr Petroleum - Alexandria #1,Fuel,Enterprise,20241228
+33,1,MER000033,Lulu Hypermarket - Cairo #1,Grocery,Enterprise,20230511
+34,9,MER000034,Noon - Asyut #1,E-commerce,Enterprise,20240528
+35,6,MER000035,Cook Door - Tanta #1,Restaurants,Mid-Market,20241103
+36,2,MER000036,Cook Door - Giza #1,Restaurants,Mid-Market,20231122
+37,1,MER000037,Compu Me - Cairo #2,Electronics,SME,20231215
+38,2,MER000038,WE - Giza #1,Telecom,Enterprise,20230811
+39,2,MER000039,Defacto - Giza #1,Fashion,Enterprise,20230702
+40,10,MER000040,Defacto - Minya #1,Fashion,Enterprise,20231102
+41,1,MER000041,Hyper One - Cairo #1,Grocery,Enterprise,20241106
+42,9,MER000042,Metro Market - Asyut #1,Grocery,Enterprise,20230323
+43,1,MER000043,Seif Pharmacy - Cairo #1,Pharmacy,Enterprise,20240518
+44,1,MER000044,McDonald's - Cairo #2,Restaurants,Enterprise,20240628
+45,7,MER000045,KFC - Zagazig #1,Restaurants,Enterprise,20231205
+46,3,MER000046,Tradeline - Alexandria #1,Electronics,Mid-Market,20240413
+47,1,MER000047,El Ezaby Pharmacy - Cairo #1,Pharmacy,Enterprise,20230331
+48,18,MER000048,KFC - Damanhur #1,Restaurants,Enterprise,20241120
+49,1,MER000049,Tradeline - Cairo #1,Electronics,Mid-Market,20230407
+50,2,MER000050,Cook Door - Giza #2,Restaurants,Mid-Market,20240802
+51,3,MER000051,El Ezaby Pharmacy - Alexandria #1,Pharmacy,Enterprise,20230117
+52,5,MER000052,Raya Shop - Mansoura #1,Electronics,Mid-Market,20240807
+53,16,MER000053,Misr Petroleum - Aswan #1,Fuel,Enterprise,20240411
+54,4,MER000054,Shell - Shubra El Kheima #1,Fuel,Enterprise,20240322
+55,2,MER000055,Mobaco - Giza #1,Fashion,Mid-Market,20240513
+56,3,MER000056,Awlad Ragab - Alexandria #1,Grocery,Mid-Market,20231025
+57,1,MER000057,KFC - Cairo #1,Restaurants,Enterprise,20240505
+58,2,MER000058,Etisalat e& - Giza #1,Telecom,Enterprise,20240711
+59,13,MER000059,Seoudi - Sohag #1,Grocery,Mid-Market,20231006
+60,3,MER000060,Lulu Hypermarket - Alexandria #1,Grocery,Enterprise,20230213
+61,9,MER000061,GAD - Asyut #1,Restaurants,Mid-Market,20230203
+62,17,MER000062,Seif Pharmacy - Sharm El Sheikh #1,Pharmacy,Enterprise,20230815
+63,1,MER000063,Gourmet Egypt - Cairo #2,Grocery,SME,20240917
+64,1,MER000064,2B - Cairo #1,Electronics,Mid-Market,20241105
+65,9,MER000065,Mo'men - Asyut #1,Restaurants,Mid-Market,20241001
+66,2,MER000066,2B - Giza #2,Electronics,Mid-Market,20241119
+67,3,MER000067,Orange - Alexandria #1,Telecom,Enterprise,20240831
+68,3,MER000068,Cook Door - Alexandria #1,Restaurants,Mid-Market,20240612
+69,1,MER000069,Orange - Cairo #1,Telecom,Enterprise,20240710
+70,2,MER000070,Cook Door - Giza #3,Restaurants,Mid-Market,20241202
+71,6,MER000071,Buffalo Burger - Tanta #1,Restaurants,Mid-Market,20240301
+72,3,MER000072,B.TECH - Alexandria #1,Electronics,Enterprise,20230506
+73,12,MER000073,KFC - Ismailia #1,Restaurants,Enterprise,20230927
+74,3,MER000074,Gourmet Egypt - Alexandria #1,Grocery,SME,20241215
+75,4,MER000075,Metro Market - Shubra El Kheima #1,Grocery,Enterprise,20231228
+76,15,MER000076,Seoudi - Luxor #1,Grocery,Mid-Market,20230403
+77,1,MER000077,Etisalat e& - Cairo #1,Telecom,Enterprise,20240816
+78,2,MER000078,Etisalat e& - Giza #2,Telecom,Enterprise,20240709
+79,1,MER000079,Emarat Misr - Cairo #1,Fuel,Enterprise,20231004
+80,12,MER000080,Talabat - Ismailia #1,E-commerce,Enterprise,20240130
+81,4,MER000081,BIM - Shubra El Kheima #1,Grocery,Enterprise,20230728
+82,1,MER000082,Talabat - Cairo #1,E-commerce,Enterprise,20241124
+83,2,MER000083,Lulu Hypermarket - Giza #1,Grocery,Enterprise,20240916
+84,17,MER000084,Starbucks - Sharm El Sheikh #1,Restaurants,Enterprise,20240509
+85,1,MER000085,Talabat - Cairo #2,E-commerce,Enterprise,20240105
+86,2,MER000086,Vodafone - Giza #1,Telecom,Enterprise,20231210
+87,2,MER000087,Raya Shop - Giza #1,Electronics,Mid-Market,20240214
+88,1,MER000088,Kazyon - Cairo #1,Grocery,Enterprise,20230329
+89,2,MER000089,Town Team - Giza #1,Fashion,Mid-Market,20240929
+90,18,MER000090,Compu Me - Damanhur #1,Electronics,SME,20240824
+91,8,MER000091,Town Team - Port Said #1,Fashion,Mid-Market,20240624
+92,13,MER000092,KFC - Sohag #1,Restaurants,Enterprise,20241130
+93,1,MER000093,Domino's Pizza - Cairo #1,Restaurants,Enterprise,20240815
+94,2,MER000094,Ezabawy - Giza #1,Pharmacy,Mid-Market,20240616
+95,2,MER000095,Etisalat e& - Giza #3,Telecom,Enterprise,20241107
+96,12,MER000096,Mo'men - Ismailia #1,Restaurants,Mid-Market,20240904
+97,7,MER000097,Seif Pharmacy - Zagazig #1,Pharmacy,Enterprise,20240513
+98,3,MER000098,Cook Door - Alexandria #2,Restaurants,Mid-Market,20230517
+99,1,MER000099,Koshary Abou Tarek - Cairo #1,Restaurants,SME,20240122
+100,7,MER000100,GAD - Zagazig #1,Restaurants,Mid-Market,20231114
+101,9,MER000101,B.TECH - Asyut #1,Electronics,Enterprise,20240205
+102,5,MER000102,Compu Me - Mansoura #1,Electronics,SME,20231113
+103,2,MER000103,Noon - Giza #2,E-commerce,Enterprise,20231022
+104,1,MER000104,Amazon.eg - Cairo #1,E-commerce,Enterprise,20230126
+105,1,MER000105,Emarat Misr - Cairo #2,Fuel,Enterprise,20230914
+106,19,MER000106,Jumia - Fayoum #1,E-commerce,Enterprise,20231104
+107,1,MER000107,WE - Cairo #1,Telecom,Enterprise,20241024
+108,12,MER000108,Kazyon - Ismailia #1,Grocery,Enterprise,20241213
+109,1,MER000109,Koshary Abou Tarek - Cairo #2,Restaurants,SME,20230911
+110,1,MER000110,BIM - Cairo #1,Grocery,Enterprise,20240420
+111,1,MER000111,Spinneys - Cairo #2,Grocery,Enterprise,20240530
+112,8,MER000112,Ezabawy - Port Said #1,Pharmacy,Mid-Market,20241214
+113,1,MER000113,Wataniya - Cairo #1,Fuel,Enterprise,20241225
+114,1,MER000114,Buffalo Burger - Cairo #1,Restaurants,Mid-Market,20240414
+115,2,MER000115,Mobaco - Giza #2,Fashion,Mid-Market,20230609
+116,18,MER000116,Felfela - Damanhur #1,Restaurants,SME,20240411
+117,18,MER000117,Ezabawy - Damanhur #1,Pharmacy,Mid-Market,20240309
+118,3,MER000118,Noon - Alexandria #1,E-commerce,Enterprise,20230610
+119,1,MER000119,2B - Cairo #2,Electronics,Mid-Market,20230907
+120,1,MER000120,Kheir Zaman - Cairo #1,Grocery,Mid-Market,20230903
+121,8,MER000121,BIM - Port Said #1,Grocery,Enterprise,20231008
+122,3,MER000122,Domino's Pizza - Alexandria #1,Restaurants,Enterprise,20230605
+123,1,MER000123,Roshdy Pharmacy - Cairo #1,Pharmacy,Mid-Market,20240921
+124,2,MER000124,Felfela - Giza #1,Restaurants,SME,20241104
+125,1,MER000125,Defacto - Cairo #1,Fashion,Enterprise,20231021
+126,1,MER000126,McDonald's - Cairo #3,Restaurants,Enterprise,20240625
+127,14,MER000127,Defacto - Hurghada #1,Fashion,Enterprise,20240819
+128,3,MER000128,GAD - Alexandria #1,Restaurants,Mid-Market,20240503
+129,2,MER000129,Felfela - Giza #2,Restaurants,SME,20230922
+130,1,MER000130,Fathalla Market - Cairo #2,Grocery,Mid-Market,20240815
+131,1,MER000131,Gourmet Egypt - Cairo #3,Grocery,SME,20231026
+132,19,MER000132,Pizza Hut - Fayoum #1,Restaurants,Enterprise,20240822
+133,2,MER000133,Ezabawy - Giza #2,Pharmacy,Mid-Market,20240831
+134,2,MER000134,Roshdy Pharmacy - Giza #1,Pharmacy,Mid-Market,20240702
+135,8,MER000135,Carrefour - Port Said #1,Grocery,Enterprise,20240318
+136,1,MER000136,Seoudi - Cairo #1,Grocery,Mid-Market,20230910
+137,2,MER000137,BIM - Giza #1,Grocery,Enterprise,20240319
+138,3,MER000138,Roshdy Pharmacy - Alexandria #1,Pharmacy,Mid-Market,20230403
+139,2,MER000139,Carrefour - Giza #1,Grocery,Enterprise,20240621
+140,4,MER000140,Cook Door - Shubra El Kheima #1,Restaurants,Mid-Market,20240101
+141,3,MER000141,Starbucks - Alexandria #1,Restaurants,Enterprise,20240809
+142,1,MER000142,Mo'men - Cairo #2,Restaurants,Mid-Market,20240516
+143,14,MER000143,Lulu Hypermarket - Hurghada #1,Grocery,Enterprise,20230128
+144,2,MER000144,Seoudi - Giza #1,Grocery,Mid-Market,20231213
+145,1,MER000145,Domino's Pizza - Cairo #2,Restaurants,Enterprise,20240626
+146,9,MER000146,WE - Asyut #1,Telecom,Enterprise,20240717
+147,9,MER000147,Emarat Misr - Asyut #1,Fuel,Enterprise,20240408
+148,1,MER000148,LC Waikiki - Cairo #2,Fashion,Enterprise,20240224
+149,1,MER000149,ADNOC - Cairo #4,Fuel,Enterprise,20240109
+150,19,MER000150,Tradeline - Fayoum #1,Electronics,Mid-Market,20230514
+151,1,MER000151,Tradeline - Cairo #2,Electronics,Mid-Market,20230702
+152,4,MER000152,KFC - Shubra El Kheima #1,Restaurants,Enterprise,20240430
+153,1,MER000153,Koshary Abou Tarek - Cairo #3,Restaurants,SME,20240723
+154,1,MER000154,Kheir Zaman - Cairo #2,Grocery,Mid-Market,20230927
+155,1,MER000155,Spinneys - Cairo #3,Grocery,Enterprise,20240127
+156,3,MER000156,Lulu Hypermarket - Alexandria #2,Grocery,Enterprise,20231125
+157,12,MER000157,Wataniya - Ismailia #1,Fuel,Enterprise,20240826
+158,6,MER000158,Seif Pharmacy - Tanta #1,Pharmacy,Enterprise,20240908
+159,9,MER000159,Koshary Abou Tarek - Asyut #1,Restaurants,SME,20240404
+160,19,MER000160,Cook Door - Fayoum #1,Restaurants,Mid-Market,20241017
+161,2,MER000161,Raya Shop - Giza #2,Electronics,Mid-Market,20240401
+162,3,MER000162,Amazon.eg - Alexandria #1,E-commerce,Enterprise,20230622
+163,8,MER000163,Tradeline - Port Said #1,Electronics,Mid-Market,20240514
+164,1,MER000164,Felfela - Cairo #1,Restaurants,SME,20230610
+165,17,MER000165,Shell - Sharm El Sheikh #1,Fuel,Enterprise,20230426
+166,4,MER000166,Wataniya - Shubra El Kheima #1,Fuel,Enterprise,20230423
+167,3,MER000167,El Ezaby Pharmacy - Alexandria #2,Pharmacy,Enterprise,20240710
+168,1,MER000168,El Ezaby Pharmacy - Cairo #2,Pharmacy,Enterprise,20241126
+169,16,MER000169,Felfela - Aswan #1,Restaurants,SME,20241012
+170,3,MER000170,Starbucks - Alexandria #2,Restaurants,Enterprise,20230916
+171,1,MER000171,Amazon.eg - Cairo #2,E-commerce,Enterprise,20241109
+172,3,MER000172,Carrefour - Alexandria #1,Grocery,Enterprise,20241211
+173,2,MER000173,TotalEnergies - Giza #1,Fuel,Enterprise,20240302
+174,1,MER000174,Domino's Pizza - Cairo #3,Restaurants,Enterprise,20240417
+175,1,MER000175,Kazyon - Cairo #2,Grocery,Enterprise,20240908
+176,2,MER000176,Roshdy Pharmacy - Giza #2,Pharmacy,Mid-Market,20240531
+177,3,MER000177,Domino's Pizza - Alexandria #2,Restaurants,Enterprise,20230211
+178,2,MER000178,Tradeline - Giza #1,Electronics,Mid-Market,20231028
+179,14,MER000179,Seif Pharmacy - Hurghada #1,Pharmacy,Enterprise,20240918
+180,18,MER000180,Hyper One - Damanhur #1,Grocery,Enterprise,20241114
+181,1,MER000181,Buffalo Burger - Cairo #2,Restaurants,Mid-Market,20241225
+182,1,MER000182,Max Fashion - Cairo #2,Fashion,Enterprise,20240114
+183,6,MER000183,Ezabawy - Tanta #1,Pharmacy,Mid-Market,20230615
+184,3,MER000184,Town Team - Alexandria #1,Fashion,Mid-Market,20231220
+185,2,MER000185,instashop - Giza #1,E-commerce,Mid-Market,20241024
+186,1,MER000186,Carrefour - Cairo #1,Grocery,Enterprise,20240124
+187,1,MER000187,Seif Pharmacy - Cairo #2,Pharmacy,Enterprise,20241027
+188,2,MER000188,Orange - Giza #1,Telecom,Enterprise,20240205
+189,1,MER000189,Mo'men - Cairo #3,Restaurants,Mid-Market,20240608
+190,1,MER000190,Shell - Cairo #1,Fuel,Enterprise,20240820
+191,2,MER000191,Town Team - Giza #2,Fashion,Mid-Market,20240607
+192,1,MER000192,Pizza Hut - Cairo #1,Restaurants,Enterprise,20230930
+193,1,MER000193,Hardee's - Cairo #1,Restaurants,Enterprise,20240703
+194,1,MER000194,ADNOC - Cairo #5,Fuel,Enterprise,20240205
+195,5,MER000195,GAD - Mansoura #1,Restaurants,Mid-Market,20240310
+196,3,MER000196,Kazyon - Alexandria #1,Grocery,Enterprise,20230510
+197,3,MER000197,Starbucks - Alexandria #3,Restaurants,Enterprise,20240122
+198,19,MER000198,Domino's Pizza - Fayoum #1,Restaurants,Enterprise,20240617
+199,2,MER000199,Carrefour - Giza #2,Grocery,Enterprise,20240505
+200,10,MER000200,2B - Minya #1,Electronics,Mid-Market,20241105
+201,1,MER000201,Cook Door - Cairo #2,Restaurants,Mid-Market,20230220
+202,11,MER000202,Koshary Abou Tarek - Suez #1,Restaurants,SME,20240526
+203,1,MER000203,GAD - Cairo #2,Restaurants,Mid-Market,20230523
+204,7,MER000204,ADNOC - Zagazig #1,Fuel,Enterprise,20240608
+205,7,MER000205,instashop - Zagazig #1,E-commerce,Mid-Market,20231009
+206,15,MER000206,Hardee's - Luxor #1,Restaurants,Enterprise,20240604
+207,1,MER000207,Buffalo Burger - Cairo #3,Restaurants,Mid-Market,20240611
+208,1,MER000208,Pizza Hut - Cairo #2,Restaurants,Enterprise,20240201
+209,1,MER000209,Seoudi - Cairo #2,Grocery,Mid-Market,20240416
+210,2,MER000210,ADNOC - Giza #1,Fuel,Enterprise,20240601
+211,13,MER000211,Lulu Hypermarket - Sohag #1,Grocery,Enterprise,20230921
+212,15,MER000212,Seoudi - Luxor #2,Grocery,Mid-Market,20230207
+213,1,MER000213,Cook Door - Cairo #3,Restaurants,Mid-Market,20230816
+214,13,MER000214,Concrete - Sohag #1,Fashion,Mid-Market,20241109
+215,18,MER000215,Cook Door - Damanhur #1,Restaurants,Mid-Market,20230901
+216,1,MER000216,instashop - Cairo #1,E-commerce,Mid-Market,20231026
+217,12,MER000217,Concrete - Ismailia #1,Fashion,Mid-Market,20240411
+218,1,MER000218,B.TECH - Cairo #3,Electronics,Enterprise,20240621
+219,1,MER000219,Wataniya - Cairo #2,Fuel,Enterprise,20230107
+220,18,MER000220,Felfela - Damanhur #2,Restaurants,SME,20241031
+221,1,MER000221,Kazyon - Cairo #3,Grocery,Enterprise,20230903
+222,1,MER000222,Seif Pharmacy - Cairo #3,Pharmacy,Enterprise,20230930
+223,5,MER000223,Koshary Abou Tarek - Mansoura #1,Restaurants,SME,20240818
+224,12,MER000224,Fathalla Market - Ismailia #1,Grocery,Mid-Market,20240108
+225,10,MER000225,Domino's Pizza - Minya #1,Restaurants,Enterprise,20230901
+226,1,MER000226,Ezabawy - Cairo #1,Pharmacy,Mid-Market,20240915
+227,3,MER000227,Concrete - Alexandria #1,Fashion,Mid-Market,20231013
+228,14,MER000228,Carrefour - Hurghada #1,Grocery,Enterprise,20231218
+229,1,MER000229,Shell - Cairo #2,Fuel,Enterprise,20240229
+230,14,MER000230,Seif Pharmacy - Hurghada #2,Pharmacy,Enterprise,20240814
+231,4,MER000231,WE - Shubra El Kheima #1,Telecom,Enterprise,20230715
+232,2,MER000232,Ezabawy - Giza #3,Pharmacy,Mid-Market,20240604
+233,1,MER000233,Lulu Hypermarket - Cairo #2,Grocery,Enterprise,20240731
+234,2,MER000234,Roshdy Pharmacy - Giza #3,Pharmacy,Mid-Market,20240405
+235,1,MER000235,Koshary Abou Tarek - Cairo #4,Restaurants,SME,20241201
+236,1,MER000236,Gourmet Egypt - Cairo #4,Grocery,SME,20240730
+237,5,MER000237,Fathalla Market - Mansoura #1,Grocery,Mid-Market,20240811
+238,1,MER000238,Amazon.eg - Cairo #3,E-commerce,Enterprise,20230517
+239,2,MER000239,WE - Giza #2,Telecom,Enterprise,20240714
+240,1,MER000240,Pizza Hut - Cairo #3,Restaurants,Enterprise,20230926
+241,1,MER000241,Ezabawy - Cairo #2,Pharmacy,Mid-Market,20240317
+242,1,MER000242,Carrefour - Cairo #2,Grocery,Enterprise,20230506
+243,9,MER000243,B.TECH - Asyut #2,Electronics,Enterprise,20240706
+244,1,MER000244,Spinneys - Cairo #4,Grocery,Enterprise,20240502
+245,1,MER000245,Metro Market - Cairo #1,Grocery,Enterprise,20230917
+246,10,MER000246,Awlad Ragab - Minya #1,Grocery,Mid-Market,20231017
+247,2,MER000247,Koshary Abou Tarek - Giza #1,Restaurants,SME,20231229
+248,1,MER000248,Lulu Hypermarket - Cairo #3,Grocery,Enterprise,20241116
+249,2,MER000249,instashop - Giza #2,E-commerce,Mid-Market,20241205
+250,10,MER000250,Lulu Hypermarket - Minya #1,Grocery,Enterprise,20230523
+251,8,MER000251,B.TECH - Port Said #1,Electronics,Enterprise,20240409
+252,3,MER000252,Raya Shop - Alexandria #1,Electronics,Mid-Market,20230624
+253,8,MER000253,Gourmet Egypt - Port Said #1,Grocery,SME,20240103
+254,2,MER000254,Seif Pharmacy - Giza #1,Pharmacy,Enterprise,20241231
+255,2,MER000255,Wataniya - Giza #1,Fuel,Enterprise,20241031
+256,12,MER000256,instashop - Ismailia #1,E-commerce,Mid-Market,20240325
+257,4,MER000257,Carrefour - Shubra El Kheima #1,Grocery,Enterprise,20230902
+258,2,MER000258,Hardee's - Giza #1,Restaurants,Enterprise,20241129
+259,3,MER000259,TotalEnergies - Alexandria #1,Fuel,Enterprise,20240522
+260,1,MER000260,instashop - Cairo #2,E-commerce,Mid-Market,20240219
+261,10,MER000261,Defacto - Minya #2,Fashion,Enterprise,20240420
+262,1,MER000262,Jumia - Cairo #1,E-commerce,Enterprise,20240614
+263,2,MER000263,Ezabawy - Giza #4,Pharmacy,Mid-Market,20240909
+264,1,MER000264,Orange - Cairo #2,Telecom,Enterprise,20241108
+265,2,MER000265,Mobaco - Giza #3,Fashion,Mid-Market,20241114
+266,1,MER000266,Wataniya - Cairo #3,Fuel,Enterprise,20240411
+267,1,MER000267,El Ezaby Pharmacy - Cairo #3,Pharmacy,Enterprise,20240511
+268,4,MER000268,Domino's Pizza - Shubra El Kheima #1,Restaurants,Enterprise,20240406
+269,11,MER000269,Kheir Zaman - Suez #1,Grocery,Mid-Market,20240401
+270,8,MER000270,BIM - Port Said #2,Grocery,Enterprise,20230731
+271,2,MER000271,Shell - Giza #2,Fuel,Enterprise,20240924
+272,1,MER000272,Awlad Ragab - Cairo #1,Grocery,Mid-Market,20240808
+273,2,MER000273,El Ezaby Pharmacy - Giza #1,Pharmacy,Enterprise,20240103
+274,1,MER000274,McDonald's - Cairo #4,Restaurants,Enterprise,20240601
+275,2,MER000275,Pizza Hut - Giza #1,Restaurants,Enterprise,20240427
+276,5,MER000276,El Ezaby Pharmacy - Mansoura #1,Pharmacy,Enterprise,20230113
+277,2,MER000277,Roshdy Pharmacy - Giza #4,Pharmacy,Mid-Market,20231118
+278,1,MER000278,Vodafone - Cairo #1,Telecom,Enterprise,20240917
+279,11,MER000279,Fathalla Market - Suez #1,Grocery,Mid-Market,20240129
+280,8,MER000280,Etisalat e& - Port Said #1,Telecom,Enterprise,20230406
+281,1,MER000281,B.TECH - Cairo #4,Electronics,Enterprise,20241119
+282,1,MER000282,Vodafone - Cairo #2,Telecom,Enterprise,20230521
+283,1,MER000283,Town Team - Cairo #1,Fashion,Mid-Market,20230724
+284,1,MER000284,GAD - Cairo #3,Restaurants,Mid-Market,20230723
+285,10,MER000285,Starbucks - Minya #1,Restaurants,Enterprise,20241013
+286,3,MER000286,Defacto - Alexandria #1,Fashion,Enterprise,20230629
+287,3,MER000287,Talabat - Alexandria #1,E-commerce,Enterprise,20241031
+288,2,MER000288,Raya Shop - Giza #3,Electronics,Mid-Market,20230811
+289,2,MER000289,Metro Market - Giza #1,Grocery,Enterprise,20230901
+290,1,MER000290,Domino's Pizza - Cairo #4,Restaurants,Enterprise,20240304
+291,2,MER000291,BIM - Giza #2,Grocery,Enterprise,20231216
+292,2,MER000292,Starbucks - Giza #1,Restaurants,Enterprise,20230402
+293,1,MER000293,Hyper One - Cairo #2,Grocery,Enterprise,20230814
+294,1,MER000294,Kazyon - Cairo #4,Grocery,Enterprise,20230904
+295,1,MER000295,Misr Petroleum - Cairo #1,Fuel,Enterprise,20231016
+296,13,MER000296,Jumia - Sohag #1,E-commerce,Enterprise,20230811
+297,2,MER000297,Seif Pharmacy - Giza #2,Pharmacy,Enterprise,20240419
+298,1,MER000298,Compu Me - Cairo #3,Electronics,SME,20241017
+299,4,MER000299,Orange - Shubra El Kheima #1,Telecom,Enterprise,20231230
+300,13,MER000300,Seif Pharmacy - Sohag #1,Pharmacy,Enterprise,20240422
+301,1,MER000301,El Ezaby Pharmacy - Cairo #4,Pharmacy,Enterprise,20240329
+302,2,MER000302,Orange - Giza #2,Telecom,Enterprise,20230326
+303,3,MER000303,Etisalat e& - Alexandria #1,Telecom,Enterprise,20230905
+304,16,MER000304,Carrefour - Aswan #1,Grocery,Enterprise,20240511
+305,3,MER000305,Mo'men - Alexandria #1,Restaurants,Mid-Market,20240901
+306,2,MER000306,Seif Pharmacy - Giza #3,Pharmacy,Enterprise,20230628
+307,2,MER000307,McDonald's - Giza #1,Restaurants,Enterprise,20241206
+308,7,MER000308,Wataniya - Zagazig #1,Fuel,Enterprise,20241122
+309,3,MER000309,Spinneys - Alexandria #1,Grocery,Enterprise,20241010
+310,2,MER000310,instashop - Giza #3,E-commerce,Mid-Market,20230914
+311,1,MER000311,Vodafone - Cairo #3,Telecom,Enterprise,20240622
+312,1,MER000312,Pizza Hut - Cairo #4,Restaurants,Enterprise,20241110
+313,1,MER000313,WE - Cairo #2,Telecom,Enterprise,20240708
+314,1,MER000314,Jumia - Cairo #2,E-commerce,Enterprise,20240824
+315,1,MER000315,Lulu Hypermarket - Cairo #4,Grocery,Enterprise,20240308
+316,1,MER000316,McDonald's - Cairo #5,Restaurants,Enterprise,20240604
+317,10,MER000317,Noon - Minya #1,E-commerce,Enterprise,20240203
+318,6,MER000318,El Ezaby Pharmacy - Tanta #1,Pharmacy,Enterprise,20230317
+319,3,MER000319,WE - Alexandria #1,Telecom,Enterprise,20230318
+320,1,MER000320,Koshary Abou Tarek - Cairo #5,Restaurants,SME,20240524
+321,1,MER000321,Compu Me - Cairo #4,Electronics,SME,20230810
+322,14,MER000322,Orange - Hurghada #1,Telecom,Enterprise,20241210
+323,3,MER000323,Cook Door - Alexandria #3,Restaurants,Mid-Market,20230114
+324,5,MER000324,Kheir Zaman - Mansoura #1,Grocery,Mid-Market,20240926
+325,5,MER000325,Seif Pharmacy - Mansoura #1,Pharmacy,Enterprise,20241015
+326,18,MER000326,Vodafone - Damanhur #1,Telecom,Enterprise,20240822
+327,13,MER000327,Concrete - Sohag #2,Fashion,Mid-Market,20240925
+328,1,MER000328,BIM - Cairo #2,Grocery,Enterprise,20240426
+329,1,MER000329,Talabat - Cairo #3,E-commerce,Enterprise,20241009
+330,1,MER000330,Pizza Hut - Cairo #5,Restaurants,Enterprise,20230729
+331,18,MER000331,Domino's Pizza - Damanhur #1,Restaurants,Enterprise,20240217
+332,12,MER000332,instashop - Ismailia #2,E-commerce,Mid-Market,20241113
+333,1,MER000333,Talabat - Cairo #4,E-commerce,Enterprise,20240929
+334,6,MER000334,Raya Shop - Tanta #1,Electronics,Mid-Market,20241204
+335,2,MER000335,KFC - Giza #1,Restaurants,Enterprise,20240602
+336,1,MER000336,Starbucks - Cairo #3,Restaurants,Enterprise,20230316
+337,1,MER000337,TotalEnergies - Cairo #1,Fuel,Enterprise,20230418
+338,16,MER000338,Jumia - Aswan #1,E-commerce,Enterprise,20230830
+339,3,MER000339,Mo'men - Alexandria #2,Restaurants,Mid-Market,20230909
+340,9,MER000340,Koshary Abou Tarek - Asyut #2,Restaurants,SME,20230114
+341,3,MER000341,Concrete - Alexandria #2,Fashion,Mid-Market,20230820
+342,1,MER000342,Defacto - Cairo #2,Fashion,Enterprise,20231226
+343,1,MER000343,Felfela - Cairo #2,Restaurants,SME,20241014
+344,3,MER000344,Felfela - Alexandria #1,Restaurants,SME,20240407
+345,3,MER000345,Seoudi - Alexandria #1,Grocery,Mid-Market,20230807
+346,1,MER000346,Roshdy Pharmacy - Cairo #2,Pharmacy,Mid-Market,20240926
+347,4,MER000347,Pizza Hut - Shubra El Kheima #1,Restaurants,Enterprise,20240610
+348,2,MER000348,Felfela - Giza #3,Restaurants,SME,20240528
+349,2,MER000349,Roshdy Pharmacy - Giza #5,Pharmacy,Mid-Market,20240225
+350,2,MER000350,El Ezaby Pharmacy - Giza #2,Pharmacy,Enterprise,20240501
+351,1,MER000351,Buffalo Burger - Cairo #4,Restaurants,Mid-Market,20230917
+352,2,MER000352,Awlad Ragab - Giza #1,Grocery,Mid-Market,20231118
+353,9,MER000353,KFC - Asyut #1,Restaurants,Enterprise,20230920
+354,3,MER000354,Mobaco - Alexandria #2,Fashion,Mid-Market,20230520
+355,1,MER000355,LC Waikiki - Cairo #3,Fashion,Enterprise,20240129
+356,18,MER000356,Jumia - Damanhur #1,E-commerce,Enterprise,20241013
+357,2,MER000357,Orange - Giza #3,Telecom,Enterprise,20240604
+358,1,MER000358,Emarat Misr - Cairo #3,Fuel,Enterprise,20240813
+359,4,MER000359,Roshdy Pharmacy - Shubra El Kheima #1,Pharmacy,Mid-Market,20240121
+360,2,MER000360,Pizza Hut - Giza #2,Restaurants,Enterprise,20241121
+361,1,MER000361,Max Fashion - Cairo #3,Fashion,Enterprise,20241227
+362,7,MER000362,Gourmet Egypt - Zagazig #1,Grocery,SME,20231113
+363,1,MER000363,Mo'men - Cairo #4,Restaurants,Mid-Market,20231003
+364,2,MER000364,Metro Market - Giza #2,Grocery,Enterprise,20230929
+365,19,MER000365,Hyper One - Fayoum #1,Grocery,Enterprise,20240717
+366,2,MER000366,Buffalo Burger - Giza #1,Restaurants,Mid-Market,20230617
+367,2,MER000367,Fathalla Market - Giza #1,Grocery,Mid-Market,20230320
+368,2,MER000368,Gourmet Egypt - Giza #1,Grocery,SME,20240823
+369,1,MER000369,Tradeline - Cairo #3,Electronics,Mid-Market,20240205
+370,5,MER000370,WE - Mansoura #1,Telecom,Enterprise,20240901
+371,1,MER000371,Vodafone - Cairo #4,Telecom,Enterprise,20240930
+372,3,MER000372,Metro Market - Alexandria #1,Grocery,Enterprise,20230510
+373,3,MER000373,Kazyon - Alexandria #2,Grocery,Enterprise,20241129
+374,6,MER000374,ADNOC - Tanta #1,Fuel,Enterprise,20240225
+375,3,MER000375,Cook Door - Alexandria #4,Restaurants,Mid-Market,20240906
+376,3,MER000376,Town Team - Alexandria #2,Fashion,Mid-Market,20231228
+377,3,MER000377,Wataniya - Alexandria #1,Fuel,Enterprise,20240702
+378,1,MER000378,El Ezaby Pharmacy - Cairo #5,Pharmacy,Enterprise,20230609
+379,1,MER000379,Pizza Hut - Cairo #6,Restaurants,Enterprise,20240806
+380,1,MER000380,Starbucks - Cairo #4,Restaurants,Enterprise,20240308
+381,1,MER000381,Domino's Pizza - Cairo #5,Restaurants,Enterprise,20240229
+382,2,MER000382,ADNOC - Giza #2,Fuel,Enterprise,20240325
+383,9,MER000383,Amazon.eg - Asyut #1,E-commerce,Enterprise,20231107
+384,2,MER000384,Roshdy Pharmacy - Giza #6,Pharmacy,Mid-Market,20240924
+385,1,MER000385,Tradeline - Cairo #4,Electronics,Mid-Market,20240427
+386,10,MER000386,Seif Pharmacy - Minya #1,Pharmacy,Enterprise,20240727
+387,3,MER000387,Seoudi - Alexandria #2,Grocery,Mid-Market,20241202
+388,1,MER000388,El Ezaby Pharmacy - Cairo #6,Pharmacy,Enterprise,20230207
+389,6,MER000389,Hyper One - Tanta #1,Grocery,Enterprise,20230408
+390,1,MER000390,Seoudi - Cairo #3,Grocery,Mid-Market,20241217
+391,8,MER000391,Hyper One - Port Said #1,Grocery,Enterprise,20241119
+392,17,MER000392,TotalEnergies - Sharm El Sheikh #1,Fuel,Enterprise,20241002
+393,10,MER000393,Noon - Minya #2,E-commerce,Enterprise,20231130
+394,8,MER000394,Defacto - Port Said #1,Fashion,Enterprise,20231114
+395,7,MER000395,Etisalat e& - Zagazig #1,Telecom,Enterprise,20240531
+396,2,MER000396,LC Waikiki - Giza #1,Fashion,Enterprise,20241108
+397,2,MER000397,Buffalo Burger - Giza #2,Restaurants,Mid-Market,20241105
+398,7,MER000398,Gourmet Egypt - Zagazig #2,Grocery,SME,20241022
+399,2,MER000399,Etisalat e& - Giza #4,Telecom,Enterprise,20231126
+400,13,MER000400,Defacto - Sohag #1,Fashion,Enterprise,20241129
+401,1,MER000401,Noon - Cairo #1,E-commerce,Enterprise,20240312
+402,5,MER000402,Vodafone - Mansoura #1,Telecom,Enterprise,20240611
+403,1,MER000403,Buffalo Burger - Cairo #5,Restaurants,Mid-Market,20231106
+404,2,MER000404,Amazon.eg - Giza #1,E-commerce,Enterprise,20240206
+405,1,MER000405,Raya Shop - Cairo #1,Electronics,Mid-Market,20240814
+406,1,MER000406,B.TECH - Cairo #5,Electronics,Enterprise,20240924
+407,2,MER000407,Fathalla Market - Giza #2,Grocery,Mid-Market,20240312
+408,1,MER000408,Hyper One - Cairo #3,Grocery,Enterprise,20240329
+409,3,MER000409,GAD - Alexandria #2,Restaurants,Mid-Market,20230208
+410,16,MER000410,Fathalla Market - Aswan #1,Grocery,Mid-Market,20240921
+411,17,MER000411,KFC - Sharm El Sheikh #1,Restaurants,Enterprise,20240503
+412,3,MER000412,Roshdy Pharmacy - Alexandria #2,Pharmacy,Mid-Market,20241206
+413,12,MER000413,Max Fashion - Ismailia #1,Fashion,Enterprise,20230303
+414,2,MER000414,Town Team - Giza #3,Fashion,Mid-Market,20241220
+415,1,MER000415,Misr Petroleum - Cairo #2,Fuel,Enterprise,20240417
+416,8,MER000416,B.TECH - Port Said #2,Electronics,Enterprise,20231013
+417,3,MER000417,Vodafone - Alexandria #1,Telecom,Enterprise,20230512
+418,2,MER000418,El Ezaby Pharmacy - Giza #3,Pharmacy,Enterprise,20240410
+419,1,MER000419,McDonald's - Cairo #6,Restaurants,Enterprise,20231006
+420,3,MER000420,KFC - Alexandria #1,Restaurants,Enterprise,20231025
+421,3,MER000421,Raya Shop - Alexandria #2,Electronics,Mid-Market,20241103
+422,13,MER000422,GAD - Sohag #1,Restaurants,Mid-Market,20240728
+423,1,MER000423,Max Fashion - Cairo #4,Fashion,Enterprise,20240921
+424,1,MER000424,Jumia - Cairo #3,E-commerce,Enterprise,20240410
+425,3,MER000425,Kazyon - Alexandria #3,Grocery,Enterprise,20240110
+426,2,MER000426,GAD - Giza #1,Restaurants,Mid-Market,20230819
+427,8,MER000427,McDonald's - Port Said #1,Restaurants,Enterprise,20240302
+428,14,MER000428,Jumia - Hurghada #1,E-commerce,Enterprise,20240711
+429,1,MER000429,Fathalla Market - Cairo #3,Grocery,Mid-Market,20231229
+430,14,MER000430,Amazon.eg - Hurghada #1,E-commerce,Enterprise,20240409
+431,3,MER000431,Etisalat e& - Alexandria #2,Telecom,Enterprise,20240815
+432,2,MER000432,Max Fashion - Giza #1,Fashion,Enterprise,20240608
+433,3,MER000433,Kazyon - Alexandria #4,Grocery,Enterprise,20240526
+434,1,MER000434,Hyper One - Cairo #4,Grocery,Enterprise,20241109
+435,3,MER000435,Starbucks - Alexandria #4,Restaurants,Enterprise,20240714
+436,4,MER000436,Seoudi - Shubra El Kheima #1,Grocery,Mid-Market,20241117
+437,2,MER000437,Orange - Giza #4,Telecom,Enterprise,20231029
+438,2,MER000438,Defacto - Giza #2,Fashion,Enterprise,20230506
+439,1,MER000439,Ezabawy - Cairo #3,Pharmacy,Mid-Market,20230927
+440,1,MER000440,Town Team - Cairo #2,Fashion,Mid-Market,20240327
+441,3,MER000441,Kazyon - Alexandria #5,Grocery,Enterprise,20240321
+442,1,MER000442,Fathalla Market - Cairo #4,Grocery,Mid-Market,20241023
+443,3,MER000443,McDonald's - Alexandria #1,Restaurants,Enterprise,20241006
+444,3,MER000444,Vodafone - Alexandria #2,Telecom,Enterprise,20240708
+445,2,MER000445,Felfela - Giza #4,Restaurants,SME,20240621
+446,7,MER000446,Emarat Misr - Zagazig #1,Fuel,Enterprise,20230710
+447,1,MER000447,Metro Market - Cairo #2,Grocery,Enterprise,20241006
+448,1,MER000448,Jumia - Cairo #4,E-commerce,Enterprise,20230923
+449,11,MER000449,Koshary Abou Tarek - Suez #2,Restaurants,SME,20240420
+450,2,MER000450,Metro Market - Giza #3,Grocery,Enterprise,20241207
+451,6,MER000451,Emarat Misr - Tanta #1,Fuel,Enterprise,20230725
+452,3,MER000452,ADNOC - Alexandria #1,Fuel,Enterprise,20231029
+453,5,MER000453,Felfela - Mansoura #1,Restaurants,SME,20240711
+454,1,MER000454,Mobaco - Cairo #3,Fashion,Mid-Market,20240126
+455,1,MER000455,Vodafone - Cairo #5,Telecom,Enterprise,20231021
+456,4,MER000456,Defacto - Shubra El Kheima #1,Fashion,Enterprise,20240810
+457,11,MER000457,Emarat Misr - Suez #1,Fuel,Enterprise,20240423
+458,3,MER000458,Kheir Zaman - Alexandria #1,Grocery,Mid-Market,20230209
+459,1,MER000459,McDonald's - Cairo #7,Restaurants,Enterprise,20230916
+460,1,MER000460,McDonald's - Cairo #8,Restaurants,Enterprise,20240629
+461,1,MER000461,Shell - Cairo #3,Fuel,Enterprise,20241202
+462,1,MER000462,BIM - Cairo #3,Grocery,Enterprise,20231106
+463,1,MER000463,Hardee's - Cairo #2,Restaurants,Enterprise,20240922
+464,1,MER000464,Roshdy Pharmacy - Cairo #3,Pharmacy,Mid-Market,20241111
+465,1,MER000465,Talabat - Cairo #5,E-commerce,Enterprise,20231007
+466,1,MER000466,El Ezaby Pharmacy - Cairo #7,Pharmacy,Enterprise,20240622
+467,1,MER000467,McDonald's - Cairo #9,Restaurants,Enterprise,20240203
+468,3,MER000468,Raya Shop - Alexandria #3,Electronics,Mid-Market,20240531
+469,3,MER000469,Compu Me - Alexandria #1,Electronics,SME,20240105
+470,1,MER000470,Noon - Cairo #2,E-commerce,Enterprise,20241017
+471,19,MER000471,McDonald's - Fayoum #1,Restaurants,Enterprise,20241024
+472,6,MER000472,Defacto - Tanta #1,Fashion,Enterprise,20241030
+473,15,MER000473,Town Team - Luxor #1,Fashion,Mid-Market,20230123
+474,1,MER000474,Mo'men - Cairo #5,Restaurants,Mid-Market,20230113
+475,9,MER000475,Buffalo Burger - Asyut #1,Restaurants,Mid-Market,20230406
+476,2,MER000476,Felfela - Giza #5,Restaurants,SME,20240821
+477,3,MER000477,LC Waikiki - Alexandria #1,Fashion,Enterprise,20230905
+478,1,MER000478,McDonald's - Cairo #10,Restaurants,Enterprise,20240104
+479,4,MER000479,Etisalat e& - Shubra El Kheima #1,Telecom,Enterprise,20231105
+480,3,MER000480,Lulu Hypermarket - Alexandria #3,Grocery,Enterprise,20231129
+481,8,MER000481,instashop - Port Said #1,E-commerce,Mid-Market,20241116
+482,7,MER000482,Max Fashion - Zagazig #1,Fashion,Enterprise,20240708
+483,1,MER000483,Noon - Cairo #3,E-commerce,Enterprise,20230311
+484,1,MER000484,LC Waikiki - Cairo #4,Fashion,Enterprise,20240606
+485,1,MER000485,Tradeline - Cairo #5,Electronics,Mid-Market,20240215
+486,9,MER000486,Ezabawy - Asyut #1,Pharmacy,Mid-Market,20241028
+487,3,MER000487,Hyper One - Alexandria #1,Grocery,Enterprise,20240202
+488,16,MER000488,TotalEnergies - Aswan #1,Fuel,Enterprise,20230221
+489,6,MER000489,Wataniya - Tanta #1,Fuel,Enterprise,20231030
+490,3,MER000490,Max Fashion - Alexandria #2,Fashion,Enterprise,20240427
+491,2,MER000491,Hyper One - Giza #1,Grocery,Enterprise,20241228
+492,13,MER000492,Seoudi - Sohag #2,Grocery,Mid-Market,20230425
+493,10,MER000493,McDonald's - Minya #1,Restaurants,Enterprise,20240418
+494,1,MER000494,El Ezaby Pharmacy - Cairo #8,Pharmacy,Enterprise,20240214
+495,1,MER000495,Ezabawy - Cairo #4,Pharmacy,Mid-Market,20230619
+496,1,MER000496,Mobaco - Cairo #4,Fashion,Mid-Market,20241129
+497,1,MER000497,Orange - Cairo #3,Telecom,Enterprise,20240312
+498,2,MER000498,Roshdy Pharmacy - Giza #7,Pharmacy,Mid-Market,20240129
+499,4,MER000499,Seif Pharmacy - Shubra El Kheima #1,Pharmacy,Enterprise,20240831
+500,3,MER000500,Metro Market - Alexandria #2,Grocery,Enterprise,20241110
+501,2,MER000501,Emarat Misr - Giza #2,Fuel,Enterprise,20230130
+502,1,MER000502,Talabat - Cairo #6,E-commerce,Enterprise,20230708
+503,3,MER000503,TotalEnergies - Alexandria #2,Fuel,Enterprise,20240917
+504,1,MER000504,LC Waikiki - Cairo #5,Fashion,Enterprise,20240415
+505,17,MER000505,Hyper One - Sharm El Sheikh #1,Grocery,Enterprise,20230911
+506,2,MER000506,KFC - Giza #2,Restaurants,Enterprise,20230508
+507,14,MER000507,McDonald's - Hurghada #1,Restaurants,Enterprise,20241028
+508,7,MER000508,Raya Shop - Zagazig #1,Electronics,Mid-Market,20240514
+509,2,MER000509,Etisalat e& - Giza #5,Telecom,Enterprise,20241222
+510,3,MER000510,Koshary Abou Tarek - Alexandria #1,Restaurants,SME,20231223
+511,3,MER000511,Max Fashion - Alexandria #3,Fashion,Enterprise,20231220
+512,16,MER000512,Town Team - Aswan #1,Fashion,Mid-Market,20230416
+513,1,MER000513,Kazyon - Cairo #5,Grocery,Enterprise,20240524
+514,1,MER000514,Cook Door - Cairo #4,Restaurants,Mid-Market,20240119
+515,1,MER000515,Misr Petroleum - Cairo #3,Fuel,Enterprise,20240922
+516,3,MER000516,Starbucks - Alexandria #5,Restaurants,Enterprise,20240321
+517,1,MER000517,Max Fashion - Cairo #5,Fashion,Enterprise,20231201
+518,14,MER000518,GAD - Hurghada #1,Restaurants,Mid-Market,20231225
+519,2,MER000519,Noon - Giza #3,E-commerce,Enterprise,20231217
+520,5,MER000520,Pizza Hut - Mansoura #1,Restaurants,Enterprise,20230223
+521,2,MER000521,Mo'men - Giza #1,Restaurants,Mid-Market,20241001
+522,10,MER000522,Kazyon - Minya #1,Grocery,Enterprise,20241026
+523,1,MER000523,Misr Petroleum - Cairo #4,Fuel,Enterprise,20231019
+524,1,MER000524,McDonald's - Cairo #11,Restaurants,Enterprise,20241104
+525,5,MER000525,Ezabawy - Mansoura #1,Pharmacy,Mid-Market,20230120
+526,1,MER000526,Fathalla Market - Cairo #5,Grocery,Mid-Market,20230207
+527,1,MER000527,Kazyon - Cairo #6,Grocery,Enterprise,20240902
+528,2,MER000528,Hardee's - Giza #2,Restaurants,Enterprise,20240212
+529,6,MER000529,Kheir Zaman - Tanta #1,Grocery,Mid-Market,20230619
+530,7,MER000530,Fathalla Market - Zagazig #1,Grocery,Mid-Market,20230401
+531,1,MER000531,Tradeline - Cairo #6,Electronics,Mid-Market,20240530
+532,1,MER000532,McDonald's - Cairo #12,Restaurants,Enterprise,20240913
+533,4,MER000533,Defacto - Shubra El Kheima #2,Fashion,Enterprise,20241021
+534,14,MER000534,Pizza Hut - Hurghada #1,Restaurants,Enterprise,20230422
+535,1,MER000535,Vodafone - Cairo #6,Telecom,Enterprise,20230602
+536,11,MER000536,Mo'men - Suez #1,Restaurants,Mid-Market,20231113
+537,1,MER000537,Metro Market - Cairo #3,Grocery,Enterprise,20240303
+538,1,MER000538,Cook Door - Cairo #5,Restaurants,Mid-Market,20240922
+539,1,MER000539,Domino's Pizza - Cairo #6,Restaurants,Enterprise,20240205
+540,2,MER000540,Mo'men - Giza #2,Restaurants,Mid-Market,20240515
+541,3,MER000541,Noon - Alexandria #2,E-commerce,Enterprise,20230829
+542,2,MER000542,Shell - Giza #3,Fuel,Enterprise,20241201
+543,2,MER000543,McDonald's - Giza #2,Restaurants,Enterprise,20230927
+544,1,MER000544,GAD - Cairo #4,Restaurants,Mid-Market,20240304
+545,2,MER000545,Cook Door - Giza #4,Restaurants,Mid-Market,20240727
+546,1,MER000546,Starbucks - Cairo #5,Restaurants,Enterprise,20230509
+547,1,MER000547,Seif Pharmacy - Cairo #4,Pharmacy,Enterprise,20240731
+548,3,MER000548,Amazon.eg - Alexandria #2,E-commerce,Enterprise,20240715
+549,1,MER000549,McDonald's - Cairo #13,Restaurants,Enterprise,20240926
+550,2,MER000550,instashop - Giza #4,E-commerce,Mid-Market,20240816
+551,5,MER000551,Pizza Hut - Mansoura #2,Restaurants,Enterprise,20230402
+552,2,MER000552,Carrefour - Giza #3,Grocery,Enterprise,20241028
+553,4,MER000553,El Ezaby Pharmacy - Shubra El Kheima #1,Pharmacy,Enterprise,20240920
+554,1,MER000554,Mo'men - Cairo #6,Restaurants,Mid-Market,20230101
+555,17,MER000555,2B - Sharm El Sheikh #1,Electronics,Mid-Market,20230122
+556,15,MER000556,Felfela - Luxor #1,Restaurants,SME,20241025
+557,2,MER000557,Lulu Hypermarket - Giza #2,Grocery,Enterprise,20240926
+558,1,MER000558,Pizza Hut - Cairo #7,Restaurants,Enterprise,20241031
+559,3,MER000559,Kazyon - Alexandria #6,Grocery,Enterprise,20231222
+560,2,MER000560,BIM - Giza #3,Grocery,Enterprise,20241220
+561,14,MER000561,Kazyon - Hurghada #1,Grocery,Enterprise,20241105
+562,1,MER000562,Mobaco - Cairo #5,Fashion,Mid-Market,20240317
+563,2,MER000563,WE - Giza #3,Telecom,Enterprise,20241026
+564,1,MER000564,Metro Market - Cairo #4,Grocery,Enterprise,20230614
+565,3,MER000565,Kazyon - Alexandria #7,Grocery,Enterprise,20240620
+566,17,MER000566,Roshdy Pharmacy - Sharm El Sheikh #1,Pharmacy,Mid-Market,20231226
+567,2,MER000567,McDonald's - Giza #3,Restaurants,Enterprise,20240824
+568,1,MER000568,Spinneys - Cairo #5,Grocery,Enterprise,20240302
+569,1,MER000569,Noon - Cairo #4,E-commerce,Enterprise,20231023
+570,2,MER000570,Hyper One - Giza #2,Grocery,Enterprise,20230305
+571,3,MER000571,Ezabawy - Alexandria #1,Pharmacy,Mid-Market,20231017
+572,2,MER000572,Pizza Hut - Giza #3,Restaurants,Enterprise,20240426
+573,4,MER000573,Noon - Shubra El Kheima #1,E-commerce,Enterprise,20241206
+574,9,MER000574,instashop - Asyut #1,E-commerce,Mid-Market,20230928
+575,2,MER000575,GAD - Giza #2,Restaurants,Mid-Market,20240715
+576,2,MER000576,Defacto - Giza #3,Fashion,Enterprise,20241027
+577,8,MER000577,Seoudi - Port Said #1,Grocery,Mid-Market,20240413
+578,2,MER000578,Jumia - Giza #1,E-commerce,Enterprise,20241024
+579,3,MER000579,Metro Market - Alexandria #3,Grocery,Enterprise,20240912
+580,16,MER000580,instashop - Aswan #1,E-commerce,Mid-Market,20240111
+581,1,MER000581,Town Team - Cairo #3,Fashion,Mid-Market,20240113
+582,17,MER000582,Gourmet Egypt - Sharm El Sheikh #1,Grocery,SME,20241031
+583,2,MER000583,Spinneys - Giza #1,Grocery,Enterprise,20240516
+584,1,MER000584,Roshdy Pharmacy - Cairo #4,Pharmacy,Mid-Market,20240913
+585,1,MER000585,McDonald's - Cairo #14,Restaurants,Enterprise,20240920
+586,1,MER000586,Domino's Pizza - Cairo #7,Restaurants,Enterprise,20241005
+587,8,MER000587,Raya Shop - Port Said #1,Electronics,Mid-Market,20230820
+588,3,MER000588,Buffalo Burger - Alexandria #1,Restaurants,Mid-Market,20240321
+589,3,MER000589,Ezabawy - Alexandria #2,Pharmacy,Mid-Market,20231125
+590,1,MER000590,Misr Petroleum - Cairo #5,Fuel,Enterprise,20231107
+591,1,MER000591,Vodafone - Cairo #7,Telecom,Enterprise,20240910
+592,9,MER000592,El Ezaby Pharmacy - Asyut #1,Pharmacy,Enterprise,20240507
+593,3,MER000593,Talabat - Alexandria #2,E-commerce,Enterprise,20241231
+594,5,MER000594,TotalEnergies - Mansoura #1,Fuel,Enterprise,20240923
+595,8,MER000595,Buffalo Burger - Port Said #1,Restaurants,Mid-Market,20241101
+596,1,MER000596,B.TECH - Cairo #6,Electronics,Enterprise,20230912
+597,1,MER000597,Roshdy Pharmacy - Cairo #5,Pharmacy,Mid-Market,20240510
+598,7,MER000598,McDonald's - Zagazig #1,Restaurants,Enterprise,20240713
+599,6,MER000599,Town Team - Tanta #1,Fashion,Mid-Market,20240205
+600,13,MER000600,Noon - Sohag #1,E-commerce,Enterprise,20240526
+601,2,MER000601,Ezabawy - Giza #5,Pharmacy,Mid-Market,20241125
+602,6,MER000602,Town Team - Tanta #2,Fashion,Mid-Market,20241220
+603,8,MER000603,Etisalat e& - Port Said #2,Telecom,Enterprise,20231103
+604,1,MER000604,BIM - Cairo #4,Grocery,Enterprise,20230115
+605,14,MER000605,Lulu Hypermarket - Hurghada #2,Grocery,Enterprise,20240526
+606,2,MER000606,Ezabawy - Giza #6,Pharmacy,Mid-Market,20231014
+607,2,MER000607,Vodafone - Giza #2,Telecom,Enterprise,20230629
+608,4,MER000608,Tradeline - Shubra El Kheima #1,Electronics,Mid-Market,20240726
+609,1,MER000609,Hardee's - Cairo #3,Restaurants,Enterprise,20230103
+610,1,MER000610,Wataniya - Cairo #4,Fuel,Enterprise,20230315
+611,1,MER000611,Lulu Hypermarket - Cairo #5,Grocery,Enterprise,20240806
+612,14,MER000612,TotalEnergies - Hurghada #1,Fuel,Enterprise,20240501
+613,2,MER000613,Town Team - Giza #4,Fashion,Mid-Market,20230709
+614,9,MER000614,Emarat Misr - Asyut #2,Fuel,Enterprise,20241115
+615,1,MER000615,BIM - Cairo #5,Grocery,Enterprise,20240710
+616,2,MER000616,Seif Pharmacy - Giza #4,Pharmacy,Enterprise,20240524
+617,13,MER000617,El Ezaby Pharmacy - Sohag #1,Pharmacy,Enterprise,20230116
+618,1,MER000618,Emarat Misr - Cairo #4,Fuel,Enterprise,20240722
+619,1,MER000619,Emarat Misr - Cairo #5,Fuel,Enterprise,20241112
+620,10,MER000620,instashop - Minya #1,E-commerce,Mid-Market,20240507
+621,1,MER000621,Ezabawy - Cairo #5,Pharmacy,Mid-Market,20240725
+622,3,MER000622,Talabat - Alexandria #3,E-commerce,Enterprise,20240209
+623,2,MER000623,Fathalla Market - Giza #3,Grocery,Mid-Market,20230626
+624,3,MER000624,Defacto - Alexandria #2,Fashion,Enterprise,20231021
+625,4,MER000625,Koshary Abou Tarek - Shubra El Kheima #1,Restaurants,SME,20241219
+626,11,MER000626,Amazon.eg - Suez #1,E-commerce,Enterprise,20240826
+627,1,MER000627,Talabat - Cairo #7,E-commerce,Enterprise,20241216
+628,1,MER000628,Mo'men - Cairo #7,Restaurants,Mid-Market,20230427
+629,3,MER000629,Ezabawy - Alexandria #3,Pharmacy,Mid-Market,20240806
+630,2,MER000630,Misr Petroleum - Giza #1,Fuel,Enterprise,20230801
+631,13,MER000631,Noon - Sohag #2,E-commerce,Enterprise,20230706
+632,1,MER000632,Awlad Ragab - Cairo #2,Grocery,Mid-Market,20240828
+633,5,MER000633,Emarat Misr - Mansoura #1,Fuel,Enterprise,20230915
+634,10,MER000634,Noon - Minya #3,E-commerce,Enterprise,20241005
+635,13,MER000635,Fathalla Market - Sohag #1,Grocery,Mid-Market,20230614
+636,2,MER000636,Noon - Giza #4,E-commerce,Enterprise,20240415
+637,1,MER000637,McDonald's - Cairo #15,Restaurants,Enterprise,20241115
+638,1,MER000638,KFC - Cairo #2,Restaurants,Enterprise,20230617
+639,2,MER000639,Buffalo Burger - Giza #3,Restaurants,Mid-Market,20240728
+640,2,MER000640,Koshary Abou Tarek - Giza #2,Restaurants,SME,20231126
+641,3,MER000641,Gourmet Egypt - Alexandria #2,Grocery,SME,20241212
+642,2,MER000642,Wataniya - Giza #2,Fuel,Enterprise,20241128
+643,1,MER000643,Raya Shop - Cairo #2,Electronics,Mid-Market,20240503
+644,3,MER000644,Fathalla Market - Alexandria #1,Grocery,Mid-Market,20240811
+645,2,MER000645,Misr Petroleum - Giza #2,Fuel,Enterprise,20230130
+646,3,MER000646,Max Fashion - Alexandria #4,Fashion,Enterprise,20241203
+647,1,MER000647,Seif Pharmacy - Cairo #5,Pharmacy,Enterprise,20240603
+648,2,MER000648,Domino's Pizza - Giza #1,Restaurants,Enterprise,20240512
+649,18,MER000649,TotalEnergies - Damanhur #1,Fuel,Enterprise,20240306
+650,3,MER000650,El Ezaby Pharmacy - Alexandria #3,Pharmacy,Enterprise,20231011
+651,3,MER000651,Amazon.eg - Alexandria #3,E-commerce,Enterprise,20241010
+652,1,MER000652,Kazyon - Cairo #7,Grocery,Enterprise,20240116
+653,4,MER000653,Misr Petroleum - Shubra El Kheima #1,Fuel,Enterprise,20240607
+654,1,MER000654,Spinneys - Cairo #6,Grocery,Enterprise,20240417
+655,1,MER000655,Jumia - Cairo #5,E-commerce,Enterprise,20240304
+656,3,MER000656,Cook Door - Alexandria #5,Restaurants,Mid-Market,20240326
+657,17,MER000657,2B - Sharm El Sheikh #2,Electronics,Mid-Market,20230502
+658,3,MER000658,Compu Me - Alexandria #2,Electronics,SME,20231124
+659,2,MER000659,BIM - Giza #4,Grocery,Enterprise,20230425
+660,1,MER000660,Talabat - Cairo #8,E-commerce,Enterprise,20230109
+661,2,MER000661,El Ezaby Pharmacy - Giza #4,Pharmacy,Enterprise,20231231
+662,1,MER000662,Defacto - Cairo #3,Fashion,Enterprise,20230610
+663,3,MER000663,Domino's Pizza - Alexandria #3,Restaurants,Enterprise,20240226
+664,12,MER000664,Ezabawy - Ismailia #1,Pharmacy,Mid-Market,20240401
+665,3,MER000665,Mobaco - Alexandria #3,Fashion,Mid-Market,20230804
+666,3,MER000666,Vodafone - Alexandria #3,Telecom,Enterprise,20240803
+667,8,MER000667,Emarat Misr - Port Said #1,Fuel,Enterprise,20230401
+668,2,MER000668,Jumia - Giza #2,E-commerce,Enterprise,20230930
+669,1,MER000669,Ezabawy - Cairo #6,Pharmacy,Mid-Market,20241024
+670,12,MER000670,Lulu Hypermarket - Ismailia #1,Grocery,Enterprise,20240331
+671,3,MER000671,Jumia - Alexandria #1,E-commerce,Enterprise,20240419
+672,15,MER000672,Seif Pharmacy - Luxor #1,Pharmacy,Enterprise,20240820
+673,8,MER000673,B.TECH - Port Said #3,Electronics,Enterprise,20231008
+674,3,MER000674,Vodafone - Alexandria #4,Telecom,Enterprise,20240812
+675,2,MER000675,LC Waikiki - Giza #2,Fashion,Enterprise,20240827
+676,15,MER000676,Shell - Luxor #1,Fuel,Enterprise,20231229
+677,1,MER000677,Emarat Misr - Cairo #6,Fuel,Enterprise,20241205
+678,4,MER000678,Gourmet Egypt - Shubra El Kheima #1,Grocery,SME,20241207
+679,6,MER000679,TotalEnergies - Tanta #1,Fuel,Enterprise,20240306
+680,5,MER000680,Kazyon - Mansoura #1,Grocery,Enterprise,20230925
+681,7,MER000681,Seoudi - Zagazig #1,Grocery,Mid-Market,20240808
+682,1,MER000682,Compu Me - Cairo #5,Electronics,SME,20230206
+683,2,MER000683,Pizza Hut - Giza #4,Restaurants,Enterprise,20240421
+684,5,MER000684,Domino's Pizza - Mansoura #1,Restaurants,Enterprise,20240425
+685,5,MER000685,Jumia - Mansoura #1,E-commerce,Enterprise,20230812
+686,3,MER000686,Emarat Misr - Alexandria #1,Fuel,Enterprise,20231207
+687,1,MER000687,McDonald's - Cairo #16,Restaurants,Enterprise,20230201
+688,2,MER000688,Shell - Giza #4,Fuel,Enterprise,20240522
+689,9,MER000689,Max Fashion - Asyut #1,Fashion,Enterprise,20230525
+690,1,MER000690,Hardee's - Cairo #4,Restaurants,Enterprise,20240612
+691,2,MER000691,Seoudi - Giza #2,Grocery,Mid-Market,20240704
+692,18,MER000692,Kheir Zaman - Damanhur #1,Grocery,Mid-Market,20230818
+693,10,MER000693,Noon - Minya #4,E-commerce,Enterprise,20230729
+694,1,MER000694,Tradeline - Cairo #7,Electronics,Mid-Market,20240429
+695,2,MER000695,KFC - Giza #3,Restaurants,Enterprise,20240917
+696,1,MER000696,McDonald's - Cairo #17,Restaurants,Enterprise,20231208
+697,3,MER000697,Etisalat e& - Alexandria #3,Telecom,Enterprise,20230908
+698,1,MER000698,Fathalla Market - Cairo #6,Grocery,Mid-Market,20240915
+699,10,MER000699,instashop - Minya #2,E-commerce,Mid-Market,20240817
+700,2,MER000700,Hardee's - Giza #3,Restaurants,Enterprise,20241122
+701,3,MER000701,Domino's Pizza - Alexandria #4,Restaurants,Enterprise,20240221
+702,2,MER000702,Kheir Zaman - Giza #1,Grocery,Mid-Market,20231231
+703,14,MER000703,BIM - Hurghada #1,Grocery,Enterprise,20240307
+704,1,MER000704,2B - Cairo #3,Electronics,Mid-Market,20230831
+705,2,MER000705,Noon - Giza #5,E-commerce,Enterprise,20230501
+706,2,MER000706,Pizza Hut - Giza #5,Restaurants,Enterprise,20241008
+707,3,MER000707,Seoudi - Alexandria #3,Grocery,Mid-Market,20241014
+708,2,MER000708,Awlad Ragab - Giza #2,Grocery,Mid-Market,20241113
+709,2,MER000709,McDonald's - Giza #4,Restaurants,Enterprise,20240430
+710,2,MER000710,Hyper One - Giza #3,Grocery,Enterprise,20240206
+711,1,MER000711,Raya Shop - Cairo #3,Electronics,Mid-Market,20240408
+712,2,MER000712,instashop - Giza #5,E-commerce,Mid-Market,20240116
+713,1,MER000713,El Ezaby Pharmacy - Cairo #9,Pharmacy,Enterprise,20230616
+714,1,MER000714,Noon - Cairo #5,E-commerce,Enterprise,20240708
+715,3,MER000715,Metro Market - Alexandria #4,Grocery,Enterprise,20231215
+716,10,MER000716,Starbucks - Minya #2,Restaurants,Enterprise,20231106
+717,14,MER000717,El Ezaby Pharmacy - Hurghada #1,Pharmacy,Enterprise,20240316
+718,10,MER000718,Roshdy Pharmacy - Minya #1,Pharmacy,Mid-Market,20230812
+719,8,MER000719,Misr Petroleum - Port Said #1,Fuel,Enterprise,20240109
+720,2,MER000720,TotalEnergies - Giza #2,Fuel,Enterprise,20230604
+721,2,MER000721,Pizza Hut - Giza #6,Restaurants,Enterprise,20240813
+722,1,MER000722,KFC - Cairo #3,Restaurants,Enterprise,20240723
+723,2,MER000723,Jumia - Giza #3,E-commerce,Enterprise,20230204
+724,1,MER000724,Vodafone - Cairo #8,Telecom,Enterprise,20240724
+725,2,MER000725,ADNOC - Giza #3,Fuel,Enterprise,20240607
+726,13,MER000726,Tradeline - Sohag #1,Electronics,Mid-Market,20240621
+727,1,MER000727,Buffalo Burger - Cairo #6,Restaurants,Mid-Market,20240503
+728,3,MER000728,Misr Petroleum - Alexandria #2,Fuel,Enterprise,20230923
+729,10,MER000729,McDonald's - Minya #2,Restaurants,Enterprise,20240626
+730,10,MER000730,Fathalla Market - Minya #1,Grocery,Mid-Market,20230401
+731,2,MER000731,ADNOC - Giza #4,Fuel,Enterprise,20240722
+732,2,MER000732,Fathalla Market - Giza #4,Grocery,Mid-Market,20230828
+733,16,MER000733,Buffalo Burger - Aswan #1,Restaurants,Mid-Market,20241229
+734,1,MER000734,Awlad Ragab - Cairo #3,Grocery,Mid-Market,20230124
+735,7,MER000735,WE - Zagazig #1,Telecom,Enterprise,20240709
+736,1,MER000736,Amazon.eg - Cairo #4,E-commerce,Enterprise,20230722
+737,3,MER000737,Amazon.eg - Alexandria #4,E-commerce,Enterprise,20230923
+738,14,MER000738,Hyper One - Hurghada #1,Grocery,Enterprise,20240702
+739,1,MER000739,Kazyon - Cairo #8,Grocery,Enterprise,20241210
+740,12,MER000740,Domino's Pizza - Ismailia #1,Restaurants,Enterprise,20230827
+741,18,MER000741,Pizza Hut - Damanhur #1,Restaurants,Enterprise,20240829
+742,17,MER000742,Talabat - Sharm El Sheikh #1,E-commerce,Enterprise,20240722
+743,1,MER000743,Roshdy Pharmacy - Cairo #6,Pharmacy,Mid-Market,20241202
+744,2,MER000744,Roshdy Pharmacy - Giza #8,Pharmacy,Mid-Market,20241230
+745,1,MER000745,Buffalo Burger - Cairo #7,Restaurants,Mid-Market,20241016
+746,1,MER000746,Emarat Misr - Cairo #7,Fuel,Enterprise,20241224
+747,9,MER000747,Cook Door - Asyut #1,Restaurants,Mid-Market,20240802
+748,7,MER000748,BIM - Zagazig #1,Grocery,Enterprise,20230814
+749,1,MER000749,McDonald's - Cairo #18,Restaurants,Enterprise,20241101
+750,1,MER000750,TotalEnergies - Cairo #2,Fuel,Enterprise,20240906
+751,3,MER000751,El Ezaby Pharmacy - Alexandria #4,Pharmacy,Enterprise,20230818
+752,7,MER000752,Starbucks - Zagazig #1,Restaurants,Enterprise,20231017
+753,6,MER000753,Concrete - Tanta #1,Fashion,Mid-Market,20240914
+754,10,MER000754,TotalEnergies - Minya #1,Fuel,Enterprise,20240428
+755,9,MER000755,Town Team - Asyut #2,Fashion,Mid-Market,20240709
+756,4,MER000756,Lulu Hypermarket - Shubra El Kheima #1,Grocery,Enterprise,20231218
+757,1,MER000757,Compu Me - Cairo #6,Electronics,SME,20240615
+758,1,MER000758,Mo'men - Cairo #8,Restaurants,Mid-Market,20240119
+759,3,MER000759,Seif Pharmacy - Alexandria #1,Pharmacy,Enterprise,20230905
+760,4,MER000760,Lulu Hypermarket - Shubra El Kheima #2,Grocery,Enterprise,20240617
+761,2,MER000761,Carrefour - Giza #4,Grocery,Enterprise,20231029
+762,1,MER000762,Vodafone - Cairo #9,Telecom,Enterprise,20230513
+763,18,MER000763,Concrete - Damanhur #1,Fashion,Mid-Market,20240227
+764,2,MER000764,Koshary Abou Tarek - Giza #3,Restaurants,SME,20240520
+765,16,MER000765,BIM - Aswan #1,Grocery,Enterprise,20230913
+766,10,MER000766,Noon - Minya #5,E-commerce,Enterprise,20241022
+767,1,MER000767,Hyper One - Cairo #5,Grocery,Enterprise,20240401
+768,1,MER000768,Emarat Misr - Cairo #8,Fuel,Enterprise,20241229
+769,7,MER000769,Orange - Zagazig #1,Telecom,Enterprise,20241022
+770,1,MER000770,Lulu Hypermarket - Cairo #6,Grocery,Enterprise,20241216
+771,1,MER000771,Defacto - Cairo #4,Fashion,Enterprise,20240527
+772,14,MER000772,LC Waikiki - Hurghada #1,Fashion,Enterprise,20230103
+773,5,MER000773,Ezabawy - Mansoura #2,Pharmacy,Mid-Market,20241010
+774,18,MER000774,Wataniya - Damanhur #1,Fuel,Enterprise,20231214
+775,1,MER000775,Hardee's - Cairo #5,Restaurants,Enterprise,20231027
+776,3,MER000776,Buffalo Burger - Alexandria #2,Restaurants,Mid-Market,20230823
+777,10,MER000777,Felfela - Minya #1,Restaurants,SME,20241228
+778,1,MER000778,Etisalat e& - Cairo #2,Telecom,Enterprise,20230922
+779,1,MER000779,KFC - Cairo #4,Restaurants,Enterprise,20240828
+780,7,MER000780,Metro Market - Zagazig #1,Grocery,Enterprise,20240727
+781,9,MER000781,Felfela - Asyut #1,Restaurants,SME,20240310
+782,1,MER000782,Spinneys - Cairo #7,Grocery,Enterprise,20240327
+783,2,MER000783,Talabat - Giza #2,E-commerce,Enterprise,20241228
+784,7,MER000784,Orange - Zagazig #2,Telecom,Enterprise,20240109
+785,1,MER000785,Orange - Cairo #4,Telecom,Enterprise,20231108
+786,1,MER000786,Vodafone - Cairo #10,Telecom,Enterprise,20230706
+787,1,MER000787,McDonald's - Cairo #19,Restaurants,Enterprise,20241217
+788,1,MER000788,Town Team - Cairo #4,Fashion,Mid-Market,20230702
+789,13,MER000789,McDonald's - Sohag #1,Restaurants,Enterprise,20230518
+790,13,MER000790,instashop - Sohag #1,E-commerce,Mid-Market,20230113
+791,6,MER000791,Talabat - Tanta #1,E-commerce,Enterprise,20240828
+792,1,MER000792,Fathalla Market - Cairo #7,Grocery,Mid-Market,20240207
+793,1,MER000793,GAD - Cairo #5,Restaurants,Mid-Market,20240826
+794,10,MER000794,Emarat Misr - Minya #1,Fuel,Enterprise,20231104
+795,1,MER000795,Tradeline - Cairo #8,Electronics,Mid-Market,20230721
+796,3,MER000796,Defacto - Alexandria #3,Fashion,Enterprise,20230501
+797,1,MER000797,Kheir Zaman - Cairo #3,Grocery,Mid-Market,20231008
+798,3,MER000798,Tradeline - Alexandria #2,Electronics,Mid-Market,20241211
+799,3,MER000799,Starbucks - Alexandria #6,Restaurants,Enterprise,20231227
+800,9,MER000800,Hyper One - Asyut #1,Grocery,Enterprise,20241127
+801,3,MER000801,Roshdy Pharmacy - Alexandria #3,Pharmacy,Mid-Market,20240726
+802,19,MER000802,BIM - Fayoum #1,Grocery,Enterprise,20230303
+803,3,MER000803,Domino's Pizza - Alexandria #5,Restaurants,Enterprise,20240815
+804,4,MER000804,Orange - Shubra El Kheima #2,Telecom,Enterprise,20240812
+805,14,MER000805,Town Team - Hurghada #1,Fashion,Mid-Market,20240930
+806,3,MER000806,Seif Pharmacy - Alexandria #2,Pharmacy,Enterprise,20240813
+807,7,MER000807,Buffalo Burger - Zagazig #1,Restaurants,Mid-Market,20241215
+808,7,MER000808,Shell - Zagazig #1,Fuel,Enterprise,20241013
+809,2,MER000809,Koshary Abou Tarek - Giza #4,Restaurants,SME,20240401
+810,3,MER000810,Defacto - Alexandria #4,Fashion,Enterprise,20240803
+811,10,MER000811,ADNOC - Minya #1,Fuel,Enterprise,20230815
+812,1,MER000812,Concrete - Cairo #1,Fashion,Mid-Market,20240405
+813,16,MER000813,instashop - Aswan #2,E-commerce,Mid-Market,20240527
+814,5,MER000814,BIM - Mansoura #1,Grocery,Enterprise,20230518
+815,3,MER000815,LC Waikiki - Alexandria #2,Fashion,Enterprise,20230903
+816,19,MER000816,Carrefour - Fayoum #1,Grocery,Enterprise,20240727
+817,2,MER000817,Awlad Ragab - Giza #3,Grocery,Mid-Market,20230812
+818,3,MER000818,McDonald's - Alexandria #2,Restaurants,Enterprise,20241029
+819,3,MER000819,Jumia - Alexandria #2,E-commerce,Enterprise,20241215
+820,19,MER000820,Town Team - Fayoum #1,Fashion,Mid-Market,20230509
+821,3,MER000821,Hardee's - Alexandria #1,Restaurants,Enterprise,20240227
+822,10,MER000822,TotalEnergies - Minya #2,Fuel,Enterprise,20241205
+823,19,MER000823,Cook Door - Fayoum #2,Restaurants,Mid-Market,20241201
+824,1,MER000824,ADNOC - Cairo #6,Fuel,Enterprise,20231121
+825,1,MER000825,Koshary Abou Tarek - Cairo #6,Restaurants,SME,20240502
+826,3,MER000826,Mo'men - Alexandria #3,Restaurants,Mid-Market,20230909
+827,2,MER000827,Kazyon - Giza #1,Grocery,Enterprise,20230620
+828,2,MER000828,Mo'men - Giza #3,Restaurants,Mid-Market,20231126
+829,5,MER000829,Starbucks - Mansoura #1,Restaurants,Enterprise,20240205
+830,2,MER000830,Pizza Hut - Giza #7,Restaurants,Enterprise,20241005
+831,1,MER000831,Jumia - Cairo #6,E-commerce,Enterprise,20240422
+832,17,MER000832,B.TECH - Sharm El Sheikh #1,Electronics,Enterprise,20241214
+833,9,MER000833,Kheir Zaman - Asyut #1,Grocery,Mid-Market,20241031
+834,1,MER000834,Koshary Abou Tarek - Cairo #7,Restaurants,SME,20230613
+835,1,MER000835,Concrete - Cairo #2,Fashion,Mid-Market,20240609
+836,2,MER000836,KFC - Giza #4,Restaurants,Enterprise,20240331
+837,1,MER000837,Wataniya - Cairo #5,Fuel,Enterprise,20240222
+838,1,MER000838,Jumia - Cairo #7,E-commerce,Enterprise,20231028
+839,10,MER000839,Awlad Ragab - Minya #2,Grocery,Mid-Market,20240719
+840,6,MER000840,Noon - Tanta #1,E-commerce,Enterprise,20241107
+841,8,MER000841,Metro Market - Port Said #1,Grocery,Enterprise,20240901
+842,3,MER000842,Max Fashion - Alexandria #5,Fashion,Enterprise,20241112
+843,3,MER000843,El Ezaby Pharmacy - Alexandria #5,Pharmacy,Enterprise,20240927
+844,3,MER000844,Town Team - Alexandria #3,Fashion,Mid-Market,20231221
+845,12,MER000845,Koshary Abou Tarek - Ismailia #1,Restaurants,SME,20240624
+846,6,MER000846,Lulu Hypermarket - Tanta #1,Grocery,Enterprise,20240616
+847,11,MER000847,Spinneys - Suez #1,Grocery,Enterprise,20240813
+848,2,MER000848,Compu Me - Giza #1,Electronics,SME,20240518
+849,3,MER000849,Noon - Alexandria #3,E-commerce,Enterprise,20231025
+850,8,MER000850,Mo'men - Port Said #1,Restaurants,Mid-Market,20241007
+851,3,MER000851,Shell - Alexandria #1,Fuel,Enterprise,20231218
+852,1,MER000852,Seoudi - Cairo #4,Grocery,Mid-Market,20241023
+853,1,MER000853,ADNOC - Cairo #7,Fuel,Enterprise,20240905
+854,4,MER000854,Kheir Zaman - Shubra El Kheima #2,Grocery,Mid-Market,20230204
+855,1,MER000855,GAD - Cairo #6,Restaurants,Mid-Market,20240602
+856,1,MER000856,Compu Me - Cairo #7,Electronics,SME,20231210
+857,1,MER000857,WE - Cairo #3,Telecom,Enterprise,20240724
+858,2,MER000858,Gourmet Egypt - Giza #2,Grocery,SME,20240313
+859,4,MER000859,LC Waikiki - Shubra El Kheima #1,Fashion,Enterprise,20240229
+860,2,MER000860,Seoudi - Giza #3,Grocery,Mid-Market,20230730
+861,1,MER000861,Defacto - Cairo #5,Fashion,Enterprise,20240510
+862,1,MER000862,Concrete - Cairo #3,Fashion,Mid-Market,20240130
+863,15,MER000863,ADNOC - Luxor #1,Fuel,Enterprise,20231121
+864,1,MER000864,Concrete - Cairo #4,Fashion,Mid-Market,20230509
+865,1,MER000865,Vodafone - Cairo #11,Telecom,Enterprise,20241018
+866,3,MER000866,Domino's Pizza - Alexandria #6,Restaurants,Enterprise,20240706
+867,1,MER000867,2B - Cairo #4,Electronics,Mid-Market,20230917
+868,3,MER000868,Roshdy Pharmacy - Alexandria #4,Pharmacy,Mid-Market,20241219
+869,3,MER000869,Seoudi - Alexandria #4,Grocery,Mid-Market,20240720
+870,2,MER000870,Amazon.eg - Giza #2,E-commerce,Enterprise,20240128
+871,6,MER000871,GAD - Tanta #1,Restaurants,Mid-Market,20241124
+872,11,MER000872,Defacto - Suez #1,Fashion,Enterprise,20230907
+873,1,MER000873,Kheir Zaman - Cairo #4,Grocery,Mid-Market,20231013
+874,9,MER000874,Mo'men - Asyut #2,Restaurants,Mid-Market,20240331
+875,3,MER000875,Orange - Alexandria #2,Telecom,Enterprise,20240229
+876,2,MER000876,Gourmet Egypt - Giza #3,Grocery,SME,20240709
+877,2,MER000877,Starbucks - Giza #2,Restaurants,Enterprise,20241004
+878,4,MER000878,Felfela - Shubra El Kheima #1,Restaurants,SME,20230616
+879,2,MER000879,GAD - Giza #3,Restaurants,Mid-Market,20231104
+880,1,MER000880,Mobaco - Cairo #6,Fashion,Mid-Market,20241214
+881,3,MER000881,Kazyon - Alexandria #8,Grocery,Enterprise,20230618
+882,8,MER000882,Compu Me - Port Said #1,Electronics,SME,20241206
+883,2,MER000883,Orange - Giza #5,Telecom,Enterprise,20230309
+884,1,MER000884,Pizza Hut - Cairo #8,Restaurants,Enterprise,20240204
+885,2,MER000885,instashop - Giza #6,E-commerce,Mid-Market,20240204
+886,1,MER000886,ADNOC - Cairo #8,Fuel,Enterprise,20240825
+887,1,MER000887,Koshary Abou Tarek - Cairo #8,Restaurants,SME,20240901
+888,11,MER000888,Carrefour - Suez #1,Grocery,Enterprise,20240722
+889,9,MER000889,Compu Me - Asyut #1,Electronics,SME,20240922
+890,14,MER000890,Ezabawy - Hurghada #1,Pharmacy,Mid-Market,20230121
+891,2,MER000891,Hardee's - Giza #4,Restaurants,Enterprise,20241001
+892,10,MER000892,Tradeline - Minya #1,Electronics,Mid-Market,20241226
+893,12,MER000893,TotalEnergies - Ismailia #1,Fuel,Enterprise,20241011
+894,1,MER000894,Misr Petroleum - Cairo #6,Fuel,Enterprise,20240307
+895,14,MER000895,Carrefour - Hurghada #2,Grocery,Enterprise,20240124
+896,1,MER000896,Noon - Cairo #6,E-commerce,Enterprise,20240926
+897,1,MER000897,ADNOC - Cairo #9,Fuel,Enterprise,20240404
+898,15,MER000898,Starbucks - Luxor #1,Restaurants,Enterprise,20231113
+899,6,MER000899,Lulu Hypermarket - Tanta #2,Grocery,Enterprise,20230510
+900,3,MER000900,Amazon.eg - Alexandria #5,E-commerce,Enterprise,20230603
+901,3,MER000901,Wataniya - Alexandria #2,Fuel,Enterprise,20240627
+902,3,MER000902,Jumia - Alexandria #3,E-commerce,Enterprise,20241019
+903,3,MER000903,Starbucks - Alexandria #7,Restaurants,Enterprise,20241030
+904,2,MER000904,El Ezaby Pharmacy - Giza #5,Pharmacy,Enterprise,20240503
+905,17,MER000905,Tradeline - Sharm El Sheikh #1,Electronics,Mid-Market,20240130
+906,7,MER000906,Misr Petroleum - Zagazig #1,Fuel,Enterprise,20230326
+907,2,MER000907,Max Fashion - Giza #2,Fashion,Enterprise,20231223
+908,3,MER000908,Seif Pharmacy - Alexandria #3,Pharmacy,Enterprise,20240221
+909,8,MER000909,Hardee's - Port Said #1,Restaurants,Enterprise,20230814
+910,1,MER000910,GAD - Cairo #7,Restaurants,Mid-Market,20240824
+911,1,MER000911,BIM - Cairo #6,Grocery,Enterprise,20240921
+912,10,MER000912,El Ezaby Pharmacy - Minya #1,Pharmacy,Enterprise,20240314
+913,1,MER000913,Misr Petroleum - Cairo #7,Fuel,Enterprise,20230405
+914,3,MER000914,Kazyon - Alexandria #9,Grocery,Enterprise,20230331
+915,6,MER000915,Fathalla Market - Tanta #1,Grocery,Mid-Market,20241007
+916,1,MER000916,Shell - Cairo #4,Fuel,Enterprise,20231213
+917,2,MER000917,Compu Me - Giza #2,Electronics,SME,20230330
+918,2,MER000918,Lulu Hypermarket - Giza #3,Grocery,Enterprise,20240928
+919,1,MER000919,instashop - Cairo #3,E-commerce,Mid-Market,20230612
+920,13,MER000920,GAD - Sohag #2,Restaurants,Mid-Market,20240423
+921,1,MER000921,Concrete - Cairo #5,Fashion,Mid-Market,20241106
+922,8,MER000922,Defacto - Port Said #2,Fashion,Enterprise,20240727
+923,1,MER000923,Mobaco - Cairo #7,Fashion,Mid-Market,20230702
+924,2,MER000924,Wataniya - Giza #3,Fuel,Enterprise,20241213
+925,1,MER000925,Defacto - Cairo #6,Fashion,Enterprise,20240306
+926,1,MER000926,Max Fashion - Cairo #6,Fashion,Enterprise,20230920
+927,6,MER000927,Ezabawy - Tanta #2,Pharmacy,Mid-Market,20231030
+928,18,MER000928,Buffalo Burger - Damanhur #1,Restaurants,Mid-Market,20240915
+929,3,MER000929,Felfela - Alexandria #2,Restaurants,SME,20230611
+930,1,MER000930,instashop - Cairo #4,E-commerce,Mid-Market,20240516
+931,1,MER000931,Starbucks - Cairo #6,Restaurants,Enterprise,20241117
+932,5,MER000932,Noon - Mansoura #1,E-commerce,Enterprise,20230817
+933,2,MER000933,Starbucks - Giza #3,Restaurants,Enterprise,20230711
+934,6,MER000934,Misr Petroleum - Tanta #1,Fuel,Enterprise,20231201
+935,2,MER000935,Ezabawy - Giza #7,Pharmacy,Mid-Market,20240516
+936,1,MER000936,Ezabawy - Cairo #7,Pharmacy,Mid-Market,20230215
+937,19,MER000937,Roshdy Pharmacy - Fayoum #1,Pharmacy,Mid-Market,20240421
+938,1,MER000938,Seif Pharmacy - Cairo #6,Pharmacy,Enterprise,20231204
+939,4,MER000939,Mobaco - Shubra El Kheima #1,Fashion,Mid-Market,20240927
+940,1,MER000940,Mobaco - Cairo #8,Fashion,Mid-Market,20231211
+941,2,MER000941,Ezabawy - Giza #8,Pharmacy,Mid-Market,20230219
+942,1,MER000942,Talabat - Cairo #9,E-commerce,Enterprise,20230126
+943,15,MER000943,Raya Shop - Luxor #1,Electronics,Mid-Market,20240921
+944,1,MER000944,Roshdy Pharmacy - Cairo #7,Pharmacy,Mid-Market,20240927
+945,2,MER000945,El Ezaby Pharmacy - Giza #6,Pharmacy,Enterprise,20230722
+946,3,MER000946,Metro Market - Alexandria #5,Grocery,Enterprise,20240213
+947,1,MER000947,Mo'men - Cairo #9,Restaurants,Mid-Market,20230410
+948,2,MER000948,Fathalla Market - Giza #5,Grocery,Mid-Market,20230408
+949,17,MER000949,Wataniya - Sharm El Sheikh #1,Fuel,Enterprise,20231109
+950,3,MER000950,BIM - Alexandria #1,Grocery,Enterprise,20241009
+951,1,MER000951,Kazyon - Cairo #9,Grocery,Enterprise,20240623
+952,6,MER000952,Fathalla Market - Tanta #2,Grocery,Mid-Market,20230828
+953,10,MER000953,Buffalo Burger - Minya #1,Restaurants,Mid-Market,20241212
+954,9,MER000954,GAD - Asyut #2,Restaurants,Mid-Market,20240908
+955,2,MER000955,Compu Me - Giza #3,Electronics,SME,20240403
+956,14,MER000956,Etisalat e& - Hurghada #1,Telecom,Enterprise,20240718
+957,3,MER000957,Emarat Misr - Alexandria #2,Fuel,Enterprise,20230623
+958,1,MER000958,instashop - Cairo #5,E-commerce,Mid-Market,20240425
+959,13,MER000959,McDonald's - Sohag #2,Restaurants,Enterprise,20231005
+960,15,MER000960,WE - Luxor #1,Telecom,Enterprise,20240301
+961,4,MER000961,El Ezaby Pharmacy - Shubra El Kheima #2,Pharmacy,Enterprise,20230220
+962,4,MER000962,Fathalla Market - Shubra El Kheima #1,Grocery,Mid-Market,20240803
+963,1,MER000963,Defacto - Cairo #7,Fashion,Enterprise,20230721
+964,2,MER000964,Emarat Misr - Giza #3,Fuel,Enterprise,20240530
+965,1,MER000965,Kheir Zaman - Cairo #5,Grocery,Mid-Market,20230411
+966,4,MER000966,2B - Shubra El Kheima #1,Electronics,Mid-Market,20231114
+967,1,MER000967,Roshdy Pharmacy - Cairo #8,Pharmacy,Mid-Market,20241128
+968,8,MER000968,B.TECH - Port Said #4,Electronics,Enterprise,20241011
+969,6,MER000969,Jumia - Tanta #1,E-commerce,Enterprise,20240731
+970,1,MER000970,Concrete - Cairo #6,Fashion,Mid-Market,20241011
+971,2,MER000971,Felfela - Giza #6,Restaurants,SME,20241013
+972,1,MER000972,ADNOC - Cairo #10,Fuel,Enterprise,20230629
+973,1,MER000973,Metro Market - Cairo #5,Grocery,Enterprise,20240131
+974,1,MER000974,Kheir Zaman - Cairo #6,Grocery,Mid-Market,20241127
+975,5,MER000975,Cook Door - Mansoura #1,Restaurants,Mid-Market,20240423
+976,7,MER000976,Koshary Abou Tarek - Zagazig #1,Restaurants,SME,20231209
+977,3,MER000977,McDonald's - Alexandria #3,Restaurants,Enterprise,20240701
+978,1,MER000978,Ezabawy - Cairo #8,Pharmacy,Mid-Market,20230628
+979,3,MER000979,LC Waikiki - Alexandria #3,Fashion,Enterprise,20240121
+980,16,MER000980,Metro Market - Aswan #1,Grocery,Enterprise,20241215
+981,3,MER000981,Misr Petroleum - Alexandria #3,Fuel,Enterprise,20230411
+982,11,MER000982,Vodafone - Suez #1,Telecom,Enterprise,20230724
+983,1,MER000983,Max Fashion - Cairo #7,Fashion,Enterprise,20240211
+984,2,MER000984,Kheir Zaman - Giza #2,Grocery,Mid-Market,20240415
+985,2,MER000985,Roshdy Pharmacy - Giza #9,Pharmacy,Mid-Market,20230511
+986,4,MER000986,Domino's Pizza - Shubra El Kheima #2,Restaurants,Enterprise,20231119
+987,2,MER000987,Seif Pharmacy - Giza #5,Pharmacy,Enterprise,20240608
+988,1,MER000988,Metro Market - Cairo #6,Grocery,Enterprise,20240708
+989,6,MER000989,Town Team - Tanta #3,Fashion,Mid-Market,20241215
+990,3,MER000990,McDonald's - Alexandria #4,Restaurants,Enterprise,20240723
+991,11,MER000991,Seif Pharmacy - Suez #1,Pharmacy,Enterprise,20240328
+992,1,MER000992,Cook Door - Cairo #6,Restaurants,Mid-Market,20241128
+993,1,MER000993,TotalEnergies - Cairo #3,Fuel,Enterprise,20241109
+994,19,MER000994,Kheir Zaman - Fayoum #1,Grocery,Mid-Market,20240723
+995,2,MER000995,Seif Pharmacy - Giza #6,Pharmacy,Enterprise,20240803
+996,1,MER000996,Hardee's - Cairo #6,Restaurants,Enterprise,20240618
+997,1,MER000997,Hardee's - Cairo #7,Restaurants,Enterprise,20231121
+998,15,MER000998,Mobaco - Luxor #1,Fashion,Mid-Market,20240318
+999,3,MER000999,Seoudi - Alexandria #5,Grocery,Mid-Market,20240904
+1000,4,MER001000,Buffalo Burger - Shubra El Kheima #1,Restaurants,Mid-Market,20241117
+1001,1,MER001001,2B - Cairo #5,Electronics,Mid-Market,20230103
+1002,1,MER001002,Buffalo Burger - Cairo #8,Restaurants,Mid-Market,20240106
+1003,1,MER001003,Koshary Abou Tarek - Cairo #9,Restaurants,SME,20240611
+1004,2,MER001004,Defacto - Giza #4,Fashion,Enterprise,20240919
+1005,1,MER001005,ADNOC - Cairo #11,Fuel,Enterprise,20241114
+1006,1,MER001006,Orange - Cairo #5,Telecom,Enterprise,20230831
+1007,10,MER001007,Buffalo Burger - Minya #2,Restaurants,Mid-Market,20230403
+1008,3,MER001008,Hardee's - Alexandria #2,Restaurants,Enterprise,20230622
+1009,3,MER001009,McDonald's - Alexandria #5,Restaurants,Enterprise,20230515
+1010,12,MER001010,Seif Pharmacy - Ismailia #1,Pharmacy,Enterprise,20240802
+1011,7,MER001011,Wataniya - Zagazig #2,Fuel,Enterprise,20241030
+1012,2,MER001012,Emarat Misr - Giza #4,Fuel,Enterprise,20230211
+1013,6,MER001013,Ezabawy - Tanta #3,Pharmacy,Mid-Market,20240817
+1014,11,MER001014,Raya Shop - Suez #1,Electronics,Mid-Market,20240214
+1015,13,MER001015,Fathalla Market - Sohag #2,Grocery,Mid-Market,20240509
+1016,7,MER001016,Defacto - Zagazig #1,Fashion,Enterprise,20240411
+1017,1,MER001017,Cook Door - Cairo #7,Restaurants,Mid-Market,20240506
+1018,1,MER001018,Carrefour - Cairo #3,Grocery,Enterprise,20240709
+1019,11,MER001019,Compu Me - Suez #1,Electronics,SME,20240115
+1020,7,MER001020,B.TECH - Zagazig #1,Electronics,Enterprise,20240614
+1021,11,MER001021,Talabat - Suez #1,E-commerce,Enterprise,20240817
+1022,3,MER001022,Emarat Misr - Alexandria #3,Fuel,Enterprise,20240229
+1023,18,MER001023,Pizza Hut - Damanhur #2,Restaurants,Enterprise,20240417
+1024,18,MER001024,Roshdy Pharmacy - Damanhur #1,Pharmacy,Mid-Market,20241013
+1025,18,MER001025,Felfela - Damanhur #3,Restaurants,SME,20230930
+1026,2,MER001026,Emarat Misr - Giza #5,Fuel,Enterprise,20230216
+1027,17,MER001027,KFC - Sharm El Sheikh #2,Restaurants,Enterprise,20231013
+1028,1,MER001028,Misr Petroleum - Cairo #8,Fuel,Enterprise,20230308
+1029,4,MER001029,El Ezaby Pharmacy - Shubra El Kheima #3,Pharmacy,Enterprise,20241217
+1030,17,MER001030,Defacto - Sharm El Sheikh #1,Fashion,Enterprise,20231003
+1031,14,MER001031,Vodafone - Hurghada #1,Telecom,Enterprise,20240919
+1032,3,MER001032,Spinneys - Alexandria #2,Grocery,Enterprise,20231001
+1033,15,MER001033,Talabat - Luxor #1,E-commerce,Enterprise,20240712
+1034,1,MER001034,Buffalo Burger - Cairo #9,Restaurants,Mid-Market,20241009
+1035,1,MER001035,Jumia - Cairo #8,E-commerce,Enterprise,20241226
+1036,2,MER001036,Carrefour - Giza #5,Grocery,Enterprise,20231210
+1037,3,MER001037,Domino's Pizza - Alexandria #7,Restaurants,Enterprise,20240816
+1038,5,MER001038,Koshary Abou Tarek - Mansoura #2,Restaurants,SME,20230318
+1039,13,MER001039,BIM - Sohag #1,Grocery,Enterprise,20241201
+1040,8,MER001040,Seoudi - Port Said #2,Grocery,Mid-Market,20230124
+1041,8,MER001041,Hardee's - Port Said #2,Restaurants,Enterprise,20240702
+1042,10,MER001042,Wataniya - Minya #1,Fuel,Enterprise,20230521
+1043,1,MER001043,Roshdy Pharmacy - Cairo #9,Pharmacy,Mid-Market,20230824
+1044,1,MER001044,Mo'men - Cairo #10,Restaurants,Mid-Market,20240314
+1045,1,MER001045,Hardee's - Cairo #8,Restaurants,Enterprise,20241111
+1046,2,MER001046,Defacto - Giza #5,Fashion,Enterprise,20240709
+1047,7,MER001047,Vodafone - Zagazig #1,Telecom,Enterprise,20240323
+1048,19,MER001048,McDonald's - Fayoum #2,Restaurants,Enterprise,20240828
+1049,3,MER001049,Tradeline - Alexandria #3,Electronics,Mid-Market,20230207
+1050,9,MER001050,Orange - Asyut #1,Telecom,Enterprise,20241123
+1051,1,MER001051,Seif Pharmacy - Cairo #7,Pharmacy,Enterprise,20240108
+1052,1,MER001052,Carrefour - Cairo #4,Grocery,Enterprise,20240307
+1053,1,MER001053,Lulu Hypermarket - Cairo #7,Grocery,Enterprise,20231003
+1054,2,MER001054,Seif Pharmacy - Giza #7,Pharmacy,Enterprise,20241015
+1055,1,MER001055,Misr Petroleum - Cairo #9,Fuel,Enterprise,20240218
+1056,2,MER001056,2B - Giza #3,Electronics,Mid-Market,20230326
+1057,1,MER001057,Town Team - Cairo #5,Fashion,Mid-Market,20240622
+1058,10,MER001058,Spinneys - Minya #1,Grocery,Enterprise,20231121
+1059,2,MER001059,Awlad Ragab - Giza #4,Grocery,Mid-Market,20231020
+1060,1,MER001060,Hardee's - Cairo #9,Restaurants,Enterprise,20240524
+1061,3,MER001061,B.TECH - Alexandria #2,Electronics,Enterprise,20230423
+1062,1,MER001062,Amazon.eg - Cairo #5,E-commerce,Enterprise,20240912
+1063,2,MER001063,Fathalla Market - Giza #6,Grocery,Mid-Market,20241125
+1064,10,MER001064,Hyper One - Minya #1,Grocery,Enterprise,20231009
+1065,10,MER001065,El Ezaby Pharmacy - Minya #2,Pharmacy,Enterprise,20240712
+1066,3,MER001066,Fathalla Market - Alexandria #2,Grocery,Mid-Market,20240318
+1067,1,MER001067,Carrefour - Cairo #5,Grocery,Enterprise,20240608
+1068,1,MER001068,Tradeline - Cairo #9,Electronics,Mid-Market,20241211
+1069,7,MER001069,Gourmet Egypt - Zagazig #3,Grocery,SME,20231018
+1070,4,MER001070,Town Team - Shubra El Kheima #1,Fashion,Mid-Market,20240711
+1071,2,MER001071,TotalEnergies - Giza #3,Fuel,Enterprise,20241004
+1072,9,MER001072,instashop - Asyut #2,E-commerce,Mid-Market,20241013
+1073,2,MER001073,Compu Me - Giza #4,Electronics,SME,20230225
+1074,19,MER001074,Ezabawy - Fayoum #1,Pharmacy,Mid-Market,20230513
+1075,1,MER001075,Spinneys - Cairo #8,Grocery,Enterprise,20240525
+1076,3,MER001076,McDonald's - Alexandria #6,Restaurants,Enterprise,20240812
+1077,4,MER001077,Jumia - Shubra El Kheima #1,E-commerce,Enterprise,20230415
+1078,2,MER001078,Mobaco - Giza #4,Fashion,Mid-Market,20230927
+1079,1,MER001079,Spinneys - Cairo #9,Grocery,Enterprise,20240811
+1080,1,MER001080,Lulu Hypermarket - Cairo #8,Grocery,Enterprise,20240524
+1081,1,MER001081,Metro Market - Cairo #7,Grocery,Enterprise,20240919
+1082,1,MER001082,Seif Pharmacy - Cairo #8,Pharmacy,Enterprise,20241001
+1083,2,MER001083,Concrete - Giza #1,Fashion,Mid-Market,20230117
+1084,3,MER001084,Talabat - Alexandria #4,E-commerce,Enterprise,20240406
+1085,17,MER001085,Spinneys - Sharm El Sheikh #1,Grocery,Enterprise,20241011
+1086,15,MER001086,Ezabawy - Luxor #1,Pharmacy,Mid-Market,20240405
+1087,1,MER001087,Kheir Zaman - Cairo #7,Grocery,Mid-Market,20240430
+1088,12,MER001088,Spinneys - Ismailia #1,Grocery,Enterprise,20231215
+1089,2,MER001089,LC Waikiki - Giza #3,Fashion,Enterprise,20240705
+1090,19,MER001090,Noon - Fayoum #1,E-commerce,Enterprise,20230723
+1091,1,MER001091,Max Fashion - Cairo #8,Fashion,Enterprise,20240613
+1092,8,MER001092,Hyper One - Port Said #2,Grocery,Enterprise,20241128
+1093,18,MER001093,KFC - Damanhur #2,Restaurants,Enterprise,20240909
+1094,1,MER001094,LC Waikiki - Cairo #6,Fashion,Enterprise,20240921
+1095,8,MER001095,Spinneys - Port Said #1,Grocery,Enterprise,20230623
+1096,16,MER001096,El Ezaby Pharmacy - Aswan #1,Pharmacy,Enterprise,20230703
+1097,13,MER001097,KFC - Sohag #2,Restaurants,Enterprise,20240222
+1098,2,MER001098,KFC - Giza #5,Restaurants,Enterprise,20240829
+1099,2,MER001099,Misr Petroleum - Giza #3,Fuel,Enterprise,20240209
+1100,3,MER001100,BIM - Alexandria #2,Grocery,Enterprise,20240203
+1101,3,MER001101,Max Fashion - Alexandria #6,Fashion,Enterprise,20240112
+1102,1,MER001102,Seif Pharmacy - Cairo #9,Pharmacy,Enterprise,20231104
+1103,1,MER001103,Kheir Zaman - Cairo #8,Grocery,Mid-Market,20240630
+1104,1,MER001104,GAD - Cairo #8,Restaurants,Mid-Market,20240909
+1105,1,MER001105,Max Fashion - Cairo #9,Fashion,Enterprise,20240926
+1106,1,MER001106,Domino's Pizza - Cairo #8,Restaurants,Enterprise,20240410
+1107,15,MER001107,Fathalla Market - Luxor #1,Grocery,Mid-Market,20240620
+1108,1,MER001108,Pizza Hut - Cairo #9,Restaurants,Enterprise,20240129
+1109,1,MER001109,Cook Door - Cairo #8,Restaurants,Mid-Market,20240402
+1110,1,MER001110,Vodafone - Cairo #12,Telecom,Enterprise,20240805
+1111,2,MER001111,GAD - Giza #4,Restaurants,Mid-Market,20231116
+1112,12,MER001112,Kheir Zaman - Ismailia #1,Grocery,Mid-Market,20230824
+1113,1,MER001113,Raya Shop - Cairo #4,Electronics,Mid-Market,20240111
+1114,7,MER001114,Vodafone - Zagazig #2,Telecom,Enterprise,20230819
+1115,3,MER001115,TotalEnergies - Alexandria #3,Fuel,Enterprise,20231003
+1116,15,MER001116,Metro Market - Luxor #1,Grocery,Enterprise,20240914
+1117,13,MER001117,Cook Door - Sohag #1,Restaurants,Mid-Market,20241105
+1118,2,MER001118,B.TECH - Giza #1,Electronics,Enterprise,20231105
+1119,7,MER001119,instashop - Zagazig #2,E-commerce,Mid-Market,20240522
+1120,2,MER001120,Seif Pharmacy - Giza #8,Pharmacy,Enterprise,20230913
+1121,8,MER001121,Amazon.eg - Port Said #1,E-commerce,Enterprise,20240904
+1122,1,MER001122,LC Waikiki - Cairo #7,Fashion,Enterprise,20240314
+1123,4,MER001123,Lulu Hypermarket - Shubra El Kheima #3,Grocery,Enterprise,20240527
+1124,3,MER001124,Roshdy Pharmacy - Alexandria #5,Pharmacy,Mid-Market,20240603
+1125,13,MER001125,Raya Shop - Sohag #1,Electronics,Mid-Market,20240629
+1126,2,MER001126,Gourmet Egypt - Giza #4,Grocery,SME,20230613
+1127,1,MER001127,El Ezaby Pharmacy - Cairo #10,Pharmacy,Enterprise,20230328
+1128,5,MER001128,Max Fashion - Mansoura #1,Fashion,Enterprise,20240920
+1129,16,MER001129,Pizza Hut - Aswan #1,Restaurants,Enterprise,20240426
+1130,9,MER001130,Felfela - Asyut #2,Restaurants,SME,20240601
+1131,10,MER001131,Hyper One - Minya #2,Grocery,Enterprise,20231230
+1132,1,MER001132,Metro Market - Cairo #8,Grocery,Enterprise,20240725
+1133,2,MER001133,Fathalla Market - Giza #7,Grocery,Mid-Market,20240419
+1134,1,MER001134,Amazon.eg - Cairo #6,E-commerce,Enterprise,20230922
+1135,15,MER001135,Hyper One - Luxor #1,Grocery,Enterprise,20240511
+1136,1,MER001136,Buffalo Burger - Cairo #10,Restaurants,Mid-Market,20240501
+1137,1,MER001137,Raya Shop - Cairo #5,Electronics,Mid-Market,20240930
+1138,1,MER001138,El Ezaby Pharmacy - Cairo #11,Pharmacy,Enterprise,20240120
+1139,11,MER001139,Misr Petroleum - Suez #1,Fuel,Enterprise,20241021
+1140,1,MER001140,Roshdy Pharmacy - Cairo #10,Pharmacy,Mid-Market,20241121
+1141,12,MER001141,Seoudi - Ismailia #1,Grocery,Mid-Market,20240930
+1142,10,MER001142,Seif Pharmacy - Minya #2,Pharmacy,Enterprise,20241219
+1143,15,MER001143,Seif Pharmacy - Luxor #2,Pharmacy,Enterprise,20241109
+1144,3,MER001144,Mobaco - Alexandria #4,Fashion,Mid-Market,20241209
+1145,15,MER001145,McDonald's - Luxor #1,Restaurants,Enterprise,20240324
+1146,2,MER001146,GAD - Giza #5,Restaurants,Mid-Market,20230226
+1147,3,MER001147,Hyper One - Alexandria #2,Grocery,Enterprise,20230313
+1148,2,MER001148,B.TECH - Giza #2,Electronics,Enterprise,20231103
+1149,9,MER001149,LC Waikiki - Asyut #1,Fashion,Enterprise,20240623
+1150,2,MER001150,Buffalo Burger - Giza #4,Restaurants,Mid-Market,20241208
+1151,2,MER001151,Roshdy Pharmacy - Giza #10,Pharmacy,Mid-Market,20241205
+1152,1,MER001152,Carrefour - Cairo #6,Grocery,Enterprise,20240831
+1153,2,MER001153,Kheir Zaman - Giza #3,Grocery,Mid-Market,20240130
+1154,6,MER001154,Cook Door - Tanta #2,Restaurants,Mid-Market,20240511
+1155,1,MER001155,Koshary Abou Tarek - Cairo #10,Restaurants,SME,20240802
+1156,1,MER001156,Defacto - Cairo #8,Fashion,Enterprise,20230801
+1157,13,MER001157,Starbucks - Sohag #1,Restaurants,Enterprise,20241014
+1158,2,MER001158,Kheir Zaman - Giza #4,Grocery,Mid-Market,20241115
+1159,6,MER001159,Hyper One - Tanta #2,Grocery,Enterprise,20231108
+1160,1,MER001160,Carrefour - Cairo #7,Grocery,Enterprise,20230617
+1161,1,MER001161,Emarat Misr - Cairo #9,Fuel,Enterprise,20240129
+1162,9,MER001162,2B - Asyut #1,Electronics,Mid-Market,20240514
+1163,1,MER001163,Noon - Cairo #7,E-commerce,Enterprise,20240806
+1164,2,MER001164,Concrete - Giza #2,Fashion,Mid-Market,20240515
+1165,2,MER001165,Wataniya - Giza #4,Fuel,Enterprise,20241110
+1166,6,MER001166,Lulu Hypermarket - Tanta #3,Grocery,Enterprise,20241127
+1167,3,MER001167,Roshdy Pharmacy - Alexandria #6,Pharmacy,Mid-Market,20230317
+1168,2,MER001168,Gourmet Egypt - Giza #5,Grocery,SME,20230112
+1169,1,MER001169,Fathalla Market - Cairo #8,Grocery,Mid-Market,20240219
+1170,3,MER001170,Compu Me - Alexandria #3,Electronics,SME,20240817
+1171,1,MER001171,Kheir Zaman - Cairo #9,Grocery,Mid-Market,20240421
+1172,7,MER001172,Buffalo Burger - Zagazig #2,Restaurants,Mid-Market,20241014
+1173,3,MER001173,ADNOC - Alexandria #2,Fuel,Enterprise,20230209
+1174,3,MER001174,Hyper One - Alexandria #3,Grocery,Enterprise,20240416
+1175,3,MER001175,2B - Alexandria #1,Electronics,Mid-Market,20231015
+1176,2,MER001176,Spinneys - Giza #2,Grocery,Enterprise,20231030
+1177,2,MER001177,Talabat - Giza #3,E-commerce,Enterprise,20240510
+1178,2,MER001178,Raya Shop - Giza #4,Electronics,Mid-Market,20240802
+1179,1,MER001179,Ezabawy - Cairo #9,Pharmacy,Mid-Market,20240404
+1180,15,MER001180,Misr Petroleum - Luxor #1,Fuel,Enterprise,20230725
+1181,1,MER001181,McDonald's - Cairo #20,Restaurants,Enterprise,20240717
+1182,12,MER001182,Etisalat e& - Ismailia #1,Telecom,Enterprise,20230204
+1183,1,MER001183,Amazon.eg - Cairo #7,E-commerce,Enterprise,20241125
+1184,7,MER001184,ADNOC - Zagazig #2,Fuel,Enterprise,20230218
+1185,1,MER001185,Shell - Cairo #5,Fuel,Enterprise,20240909
+1186,17,MER001186,TotalEnergies - Sharm El Sheikh #2,Fuel,Enterprise,20240301
+1187,14,MER001187,Kazyon - Hurghada #2,Grocery,Enterprise,20230110
+1188,1,MER001188,2B - Cairo #6,Electronics,Mid-Market,20240423
+1189,1,MER001189,Compu Me - Cairo #8,Electronics,SME,20240827
+1190,10,MER001190,Emarat Misr - Minya #2,Fuel,Enterprise,20241203
+1191,1,MER001191,Vodafone - Cairo #13,Telecom,Enterprise,20241123
+1192,3,MER001192,Orange - Alexandria #3,Telecom,Enterprise,20240212
+1193,3,MER001193,El Ezaby Pharmacy - Alexandria #6,Pharmacy,Enterprise,20240330
+1194,2,MER001194,Carrefour - Giza #6,Grocery,Enterprise,20240103
+1195,2,MER001195,Tradeline - Giza #2,Electronics,Mid-Market,20240527
+1196,9,MER001196,Koshary Abou Tarek - Asyut #3,Restaurants,SME,20241110
+1197,1,MER001197,Tradeline - Cairo #10,Electronics,Mid-Market,20241207
+1198,3,MER001198,Roshdy Pharmacy - Alexandria #7,Pharmacy,Mid-Market,20241121
+1199,2,MER001199,Carrefour - Giza #7,Grocery,Enterprise,20240810
+1200,2,MER001200,Kazyon - Giza #2,Grocery,Enterprise,20240601

@@ -1,0 +1,14 @@
+transaction_type_key,transaction_type_name,transaction_group
+1,Card Payment,Payment
+2,POS Purchase,Payment
+3,Online Payment,Payment
+4,Mobile Recharge,Payment
+5,Bill Payment,Payment
+6,P2P Transfer Sent,Transfer
+7,P2P Transfer Received,Transfer
+8,ATM Withdrawal,Withdrawal
+9,ACH Transfer,Transfer
+10,Wire Transfer,Transfer
+11,Cash Deposit,Deposit
+12,Salary Deposit,Deposit
+13,Refund,Refund

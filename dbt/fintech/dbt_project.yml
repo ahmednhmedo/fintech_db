@@ -1,0 +1,18 @@
+name: fintech
+version: "1.0"
+profile: fintech_db
+config-version: 2
+
+flags:
+  partial_parse: false
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+
+# Gold (dbo.* star) is loaded by sql/load_gold.sql and tested here via sources.
+# dbt also builds a thin reporting view on top, in a [reporting] schema.
+models:
+  fintech:
+    reporting:
+      +materialized: view
+      +schema: reporting

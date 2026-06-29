@@ -1,0 +1,9 @@
+decline_reason_key,decline_reason_name
+1,Insufficient Funds
+2,Card Expired
+3,Incorrect PIN
+4,Daily Limit Exceeded
+5,Suspected Fraud
+6,Card Blocked
+7,Technical Error
+8,Network Timeout

@@ -1,0 +1,18 @@
+# Add this block to %USERPROFILE%\.dbt\profiles.yml  (Windows). Distinct profile
+# name 'fintech_db' so it never collides with the old fintech-wh project's 'fintech'.
+# Local target = SQL Server (dbt-sqlserver) with WINDOWS AUTH (no password).
+# To migrate to the cloud later, swap only "type" + the connection block
+# (e.g. fabric / snowflake); the sources + tests are unchanged.
+fintech_db:
+  target: dev
+  outputs:
+    dev:
+      type: sqlserver
+      driver: "ODBC Driver 18 for SQL Server"
+      server: "ahmed\\SQLEXPRESS"     # named instance; escape the backslash in YAML
+      database: fintech_db
+      schema: dbo                       # gold sources live in dbo; reporting view -> [reporting]
+      windows_login: true               # Windows (trusted) auth — no SQL login
+      encrypt: true
+      trust_cert: true                  # TrustServerCertificate=yes for local dev
+      threads: 4

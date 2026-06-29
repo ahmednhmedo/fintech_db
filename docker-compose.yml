@@ -1,0 +1,73 @@
+# Local stack: Airflow (orchestrator) + its Postgres metadata DB.
+# Spark runs in local mode inside the Airflow scheduler via spark-submit.
+# The SOURCE is files (8 CSVs in data/raw) -> no MySQL needed.
+# GOLD (dbt + SQL Server load) runs on the WINDOWS HOST, not here (Windows auth).
+
+# Explicit project name isolates this stack from the OLD fintech-lakehouse project
+# (the shared folder name would otherwise share containers/volumes/network).
+name: fintech_lakehouse_new
+
+x-airflow-common: &airflow-common
+  build: { context: ., dockerfile: Dockerfile }
+  image: fintech-airflow:2.9.3
+  environment: &airflow-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    JAVA_HOME: /usr/lib/jvm/default-java
+    RAW_DIR: /opt/data/raw
+    LAKE_DIR: /opt/data/lake
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./ingestion:/opt/airflow/ingestion
+    - ./spark:/opt/airflow/spark
+    - ./data:/opt/data
+  depends_on:
+    postgres: { condition: service_healthy }
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - pgdata:/var/lib/postgresql/data   # explicit named volume (was anonymous)
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      retries: 5
+
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: /bin/bash
+    # Idempotent: migrate must succeed; create the admin user only if it doesn't
+    # already exist, so re-running `docker compose up` never fails on a duplicate.
+    command: -c "airflow db migrate && (airflow users list | grep -qw admin || airflow users create --username admin --password admin --firstname a --lastname b --role Admin --email a@b.c)"
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports: ["8081:8080"]   # UI at http://localhost:8081  (login admin/admin)
+    # Override the merged depends_on: wait for Postgres healthy AND init finished.
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    # Override the merged depends_on: wait for Postgres healthy AND init finished.
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
+# Named volume for the Airflow metadata DB -> durable, explicit, project-scoped
+# (resolves to fintech_lakehouse_new_pgdata). Isolated from the old project's volumes.
+volumes:
+  pgdata:

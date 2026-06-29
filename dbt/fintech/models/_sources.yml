@@ -1,0 +1,106 @@
+version: 2
+
+# The gold star (loaded into your DDL tables by sql/load_gold.sql) is exposed to
+# dbt as sources so we can run the data-quality gate on it: PK uniqueness,
+# NOT NULL, FK relationships, and value domains — mirroring validate_datasets.py.
+sources:
+  - name: gold
+    schema: dbo
+    tables:
+      - name: dim_date
+        columns:
+          - name: date_key
+            data_tests: [unique, not_null]
+      - name: dim_time
+        columns:
+          - name: time_key
+            data_tests: [unique, not_null]
+          - name: time_bucket
+            data_tests:
+              - accepted_values: { values: ['Morning', 'Afternoon', 'Evening', 'Night'] }
+      - name: dim_location
+        columns:
+          - name: location_key
+            data_tests: [unique, not_null]
+      - name: dim_account
+        columns:
+          - name: account_key
+            data_tests: [unique, not_null]
+          - name: account_id
+            data_tests: [unique, not_null]
+          - name: customer_tier
+            data_tests:
+              - accepted_values: { values: ['Standard', 'Premium', 'Business'] }
+          - name: account_status
+            data_tests:
+              - accepted_values: { values: ['Active', 'Dormant', 'Suspended', 'Closed'] }
+      - name: dim_merchant
+        columns:
+          - name: merchant_key
+            data_tests: [unique, not_null]
+          - name: merchant_id
+            data_tests: [unique, not_null]
+          - name: merchant_size
+            data_tests:
+              - accepted_values: { values: ['Enterprise', 'Mid-Market', 'SME'] }
+      - name: dim_transaction_type
+        columns:
+          - name: transaction_type_key
+            data_tests: [unique, not_null]
+      - name: dim_decline_reason
+        columns:
+          - name: decline_reason_key
+            data_tests: [unique, not_null]
+      - name: fact_transactions
+        description: "Grain: one row per transaction event (including declined attempts)."
+        columns:
+          - name: transaction_id
+            data_tests: [unique, not_null]
+          - name: date_key
+            data_tests:
+              - not_null
+              - relationships:
+                  to: source('gold', 'dim_date')
+                  field: date_key
+          - name: time_key
+            data_tests:
+              - not_null
+              - relationships:
+                  to: source('gold', 'dim_time')
+                  field: time_key
+          - name: account_key
+            data_tests:
+              - not_null
+              - relationships:
+                  to: source('gold', 'dim_account')
+                  field: account_key
+          - name: peer_account_key
+            data_tests:
+              - relationships:
+                  to: source('gold', 'dim_account')
+                  field: account_key
+          - name: transaction_type_key
+            data_tests:
+              - not_null
+              - relationships:
+                  to: source('gold', 'dim_transaction_type')
+                  field: transaction_type_key
+          - name: decline_reason_key
+            data_tests:
+              - relationships:
+                  to: source('gold', 'dim_decline_reason')
+                  field: decline_reason_key
+          - name: merchant_key
+            data_tests:
+              - relationships:
+                  to: source('gold', 'dim_merchant')
+                  field: merchant_key
+          - name: is_outbound
+            data_tests:
+              - accepted_values: { values: [0, 1] }
+          - name: is_declined
+            data_tests:
+              - accepted_values: { values: [0, 1] }
+          - name: is_fx
+            data_tests:
+              - accepted_values: { values: [0, 1] }
