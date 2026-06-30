@@ -1,0 +1,11 @@
+# NEW dependency for the Silver Incremental layer only.
+# (The Bronze incremental deps live in requirements-incremental.txt:
+#  confluent-kafka, fastapi, uvicorn, requests — unchanged.)
+#
+# Install into the SAME Python 3.11 venv used for the Bronze stack:
+#   pip install -r requirements_incremental.txt
+#
+# PySpark needs a JDK (Java 8/11/17) on PATH. On Windows it also needs Hadoop
+# winutils.exe (HADOOP_HOME) to write Parquet locally; the README shows a
+# zero-setup alternative: run the job inside an apache/spark Docker container.
+pyspark==3.5.3

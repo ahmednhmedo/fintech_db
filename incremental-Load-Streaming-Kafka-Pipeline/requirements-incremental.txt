@@ -1,0 +1,6 @@
+# Incremental (Kafka) pipeline deps — install into a separate venv from the
+# batch pipeline's requirements.txt to keep the two stacks isolated.
+confluent-kafka==2.5.3   # Producer / Consumer (librdkafka bindings)
+fastapi==0.115.6         # simulated source system
+uvicorn[standard]==0.34.0  # ASGI server for FastAPI
+requests==2.32.3         # producer pulls events from the FastAPI endpoint

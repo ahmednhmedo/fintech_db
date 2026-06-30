@@ -8,6 +8,7 @@ logs/
 __pycache__/
 *.pyc
 .venv/
+.venv-incremental/
 
 # Local secrets / config overrides
 .env

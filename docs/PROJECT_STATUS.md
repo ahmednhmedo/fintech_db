@@ -29,7 +29,7 @@
 │  PIPELINE IMPLEMENTATION:   ██████████  COMPLETE     │
 │  DATA QUALITY (dbt):        ██████████  COMPLETE     │
 │  DOCUMENTATION:             ██░░░░░░░░  IN PROGRESS  │
-│  POWER BI MODEL:            ░░░░░░░░░░  NOT STARTED  │
+│  POWER BI MODEL:            ██████████  COMPLETE     │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -64,7 +64,7 @@
 - [ ] `POWERBI_GUIDE.md` — end-to-end Power BI Desktop walkthrough
 - [ ] `CHANGELOG.md` — version and change history
 - [ ] `LICENSE.md` — project licence file
-- [ ] Power BI `.pbix` file — analyst builds the semantic model using `docs/POWER_BI.md`
+- [x] Power BI `.pbix` file — `powerbi/Fintch Project.pbix` completed 2026-06-30
 
 ---
 
@@ -520,14 +520,14 @@ These are the outstanding documentation tasks from the original 10-document plan
 
 These are not pipeline tasks. They require a human analyst working in Power BI Desktop with the pipeline already running.
 
-- [ ] Connect Power BI Desktop to `ahmed\SQLEXPRESS` / `fintech_db` (Import mode, Windows Auth)
-- [ ] Import 8 gold tables from `[dbo]` + optionally `[reporting].rpt_daily_transactions`
-- [ ] Configure 11 relationships (8 active, 3 inactive) per `docs/POWER_BI.md` Section 4
-- [ ] Mark `dim_date` as Date Table on `full_date`
-- [ ] Create 21 DAX measures from `docs/POWER_BI.md` Section 6
-- [ ] Verify all benchmark values from `docs/POWER_BI.md` Section 8
-- [ ] Build dashboard pages per `docs/POWER_BI.md` Section 7
-- [ ] Save and publish `.pbix` file
+- [x] Connect Power BI Desktop to `ahmed\SQLEXPRESS` / `fintech_db` (Import mode, Windows Auth)
+- [x] Import 8 gold tables from `[dbo]` + optionally `[reporting].rpt_daily_transactions`
+- [x] Configure 11 relationships (8 active, 3 inactive) per `docs/POWER_BI.md` Section 4
+- [x] Mark `dim_date` as Date Table on `full_date`
+- [x] Create 21 DAX measures from `docs/POWER_BI.md` Section 6
+- [x] Verify all benchmark values from `docs/POWER_BI.md` Section 8
+- [x] Build dashboard pages per `docs/POWER_BI.md` Section 7
+- [x] Save and publish `.pbix` file — `powerbi/Fintch Project.pbix`
 
 ### Optional Future Improvements
 
@@ -610,5 +610,6 @@ Remaining documents in order:
 
 ---
 
-*Status document version: 1.0 | Last verified: 2026-06-29*  
-*Verified against: all pipeline source files, `README.md`, `docs/ARCHITECTURE.md`, `docs/POWER_BI.md`*
+*Status document version: 1.1 | Last verified: 2026-06-30*  
+*Verified against: all pipeline source files, `README.md`, `docs/ARCHITECTURE.md`, `docs/POWER_BI.md`*  
+*Change: Power BI model marked complete — `powerbi/Fintch Project.pbix` published.*

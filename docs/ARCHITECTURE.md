@@ -1,921 +1,617 @@
 # FinTech Lakehouse — Architecture Document
 
-> **Scope:** This document describes the architecture that is **implemented today**.  
-> It does not describe aspirational design, planned features, or hypothetical improvements.  
-> Every statement is verifiable against the project source files.
+> **Scope & status legend.** This document covers three things and labels each one explicitly:
+> - **[IMPLEMENTED — LOCAL]** Built and verified locally: the initial **batch** pipeline and the **incremental (Kafka)** pipeline, both landing in a local SQL Server Express warehouse, validated by dbt, consumed by Power BI Desktop.
+> - **[PLANNED — CLOUD]** A **companion Microsoft Fabric** target architecture, derived from the *Fabric Medallion Cloud Solution Document (v1.1)*. It is a **design/target**, not an implemented system.
+>
+> Every "[IMPLEMENTED]" statement is verifiable against repository source files. Every "[PLANNED — CLOUD]" statement is sourced from the Fabric document and must **not** be read as already built.
 
 ---
 
 ## Table of Contents
 
-1. [High-Level Architecture](#1-high-level-architecture)
-2. [Technology Responsibilities](#2-technology-responsibilities)
-3. [End-to-End Data Flow](#3-end-to-end-data-flow)
-4. [Medallion Architecture](#4-medallion-architecture)
-5. [Kimball Star Schema](#5-kimball-star-schema)
-6. [Hybrid Design Rationale](#6-hybrid-design-rationale)
-7. [Orchestration Design](#7-orchestration-design)
-8. [Data Quality Framework](#8-data-quality-framework)
-9. [Security Model](#9-security-model)
-10. [Design Trade-offs](#10-design-trade-offs)
-11. [Future Evolution](#11-future-evolution)
+1. [Executive Summary](#1-executive-summary)
+2. [Architecture Scope](#2-architecture-scope)
+3. [Business Problem](#3-business-problem)
+4. [Local Solution Overview](#4-local-solution-overview)
+5. [High-Level Architecture Diagram](#5-high-level-architecture-diagram)
+6. [Initial Batch Pipeline Architecture](#6-initial-batch-pipeline-architecture)
+7. [Incremental Pipeline Architecture](#7-incremental-pipeline-architecture)
+8. [Shared Local Warehouse Architecture](#8-shared-local-warehouse-architecture)
+9. [dbt Validation and Reporting Layer](#9-dbt-validation-and-reporting-layer)
+10. [Power BI Desktop Consumption](#10-power-bi-desktop-consumption)
+11. [Technology Responsibility Matrix](#11-technology-responsibility-matrix)
+12. [Medallion Architecture](#12-medallion-architecture)
+13. [Kimball Star Schema](#13-kimball-star-schema)
+14. [Local Orchestration and Runtime](#14-local-orchestration-and-runtime)
+15. [Incremental Reliability Design](#15-incremental-reliability-design)
+16. [Data Quality and Validation Strategy](#16-data-quality-and-validation-strategy)
+17. [Security and Authentication Model](#17-security-and-authentication-model)
+18. [Microsoft Fabric Cloud Target Architecture](#18-microsoft-fabric-cloud-target-architecture)
+19. [Local vs Cloud Architecture Comparison](#19-local-vs-cloud-architecture-comparison)
+20. [Design Trade-offs](#20-design-trade-offs)
+21. [Known Limitations](#21-known-limitations)
+22. [Future Evolution](#22-future-evolution)
+23. [Appendix: Key Run Commands](#23-appendix-key-run-commands)
+24. [Appendix: Evidence / Validation Checklist](#24-appendix-evidence--validation-checklist)
 
 ---
 
-## 1. High-Level Architecture
+## 1. Executive Summary
 
-### 1.1 Pipeline Summary
+The **FinTech Lakehouse** is a local, end-to-end analytics platform for digital payment and transfer transactions. It implements the **Medallion Architecture** (Bronze → Silver → Gold) and a **Kimball star schema**, and it supports **two complementary ingestion modes** into the same warehouse:
 
-The project ingests eight CSV files totalling more than 1.3 million rows, transforms them through a three-layer medallion architecture, and delivers a validated Kimball-style star schema to Power BI. The pipeline is divided across two execution environments:
+- **[IMPLEMENTED — LOCAL] Initial batch pipeline** — loads the full historical dataset (8 CSV files, ~1.3M rows) and **initializes** the warehouse (dimensions + fact).
+- **[IMPLEMENTED — LOCAL] Incremental pipeline** — an event-driven path that simulates a real banking feed: only **new transactions** stream through FastAPI → Kafka → Bronze JSONL → PySpark Silver → SQL staging → an idempotent **SQL `MERGE`** into the existing fact table.
 
-- **Docker (Linux containers):** Airflow orchestration, Pandas-based CSV extraction, PySpark-based silver conformance.
-- **Windows host:** SQL Server warehouse loading, FK constraint management, dbt data-quality testing, and Power BI reporting.
+Both paths converge on a single **SQL Server Express** warehouse (`fintech_db.dbo.*`), which is then **validated and documented by dbt Core** and consumed by **Power BI Desktop**. A separate, **[PLANNED — CLOUD]** companion design re-expresses the same Medallion pattern on **Microsoft Fabric** (Data Factory → OneLake Lakehouse → Warehouse SQL/dbt Gold → Power BI). The cloud design is a target blueprint only; the running system is entirely local.
 
-The split is dictated by a hard technical constraint: Windows Authentication to SQL Server cannot be used from a Linux container without a Kerberos configuration that is impractical in a local development environment.
+---
 
-### 1.2 Architecture Overview
+## 2. Architecture Scope
+
+### 2.1 [IMPLEMENTED — LOCAL] Initial Batch Pipeline
+
+```
+8 CSV files → Python/Pandas ingestion → Bronze Parquet → PySpark Silver → SQL Server Express → dbt validation/reporting → Power BI Desktop
+```
+Initializes the warehouse with the full star (7 dimensions + fact). Orchestrated by Airflow (Docker) for the lake stages and PowerShell for the warehouse stages.
+
+### 2.2 [IMPLEMENTED — LOCAL] Incremental Pipeline
+
+```
+fact_transactions.csv → FastAPI simulated source → Confluent Kafka Producer → Kafka KRaft topic transactions_raw → Confluent Kafka Consumer → Bronze Incremental JSONL → PySpark Silver Incremental Parquet → Quarantine → SQL Incremental Staging → SQL MERGE into dbo.fact_transactions → dbt validation/reporting → Power BI Desktop
+```
+Loads **only new transaction events**; dimensions are assumed already present from the batch load.
+
+### 2.3 [PLANNED — CLOUD] Microsoft Fabric Cloud Solution / Target Architecture
+
+```
+Cloud CSV source → Microsoft Fabric Data Factory pipeline → Fabric Lakehouse / OneLake Bronze → Silver conformed SQL views/tables → Fabric Warehouse Gold → SQL/dbt Gold models → Power BI Desktop
+```
+Companion target design from the Fabric document. **Not implemented in this repository.** The document itself notes that the referenced private Fabric pipeline could not be externally inspected (see §18).
+
+---
+
+## 3. Business Problem
+
+A fintech company processes large volumes of digital payment and transfer transactions, but **raw operational data exists as scattered CSV exports**. Without a structured data platform, analysis of transaction volume, decline reasons, FX activity, merchant performance, customer behavior, and operational KPIs is **slow, manual, and error-prone**. There is no trusted, conformed, referentially-correct dataset that business and analytics teams can rely on, and no repeatable way to absorb **new transactions** as they arrive.
+
+**The solution.** The project creates a local **FinTech Lakehouse** that supports both **historical batch loading** and **incremental, event-driven ingestion**, producing a **trusted SQL Server warehouse** (Kimball star schema) that is **validated by dbt** and **consumed by Power BI Desktop**. The batch path establishes the warehouse; the incremental path keeps the fact table current as new transaction events occur — both enforcing the same data-quality and referential-integrity guarantees so every downstream KPI (volume, decline rate, FX mix, merchant performance, customer segments) is reproducible and correct.
+
+---
+
+## 4. Local Solution Overview
+
+The local platform runs across **two execution environments**, a split dictated by a hard technical constraint (detailed in §17): Windows Authentication to SQL Server cannot be used from a Linux container without impractical Kerberos infrastructure.
+
+- **Docker (Linux containers):** Airflow orchestration, Pandas CSV extraction, PySpark silver conformance (batch); a separate Kafka KRaft broker and a Spark container for the incremental Silver job.
+- **Windows host:** SQL Server Express warehouse, the SQL incremental loader, dbt validation, and Power BI Desktop — all using Windows (Trusted) Authentication.
+
+The **handoff artifact** between lake and warehouse is **Parquet** (Silver), for both pipelines. The incremental pipeline adds an event backbone (Kafka) and a **staging + MERGE** seam in SQL so that new events are upserted, not full-reloaded.
+
+---
+
+## 5. High-Level Architecture Diagram
+
+**Diagram 1 — Both implemented local flows converging into the local SQL Server warehouse.**
 
 ```mermaid
 flowchart TD
-    subgraph DOCKER["🐳 Docker  —  Linux Containers (fintech_lakehouse_new)"]
+    subgraph BATCH["Initial Batch Pipeline — IMPLEMENTED"]
         direction LR
-        PG[(PostgreSQL 15\nAirflow Metadata)]
-        AF[Airflow Scheduler\n+ Webserver\n:8081]
-        BRZ["Bronze Layer\ndata/lake/bronze/\nParquet  ·  Pandas"]
-        SLV["Silver Layer\ndata/lake/silver/\nParquet  ·  PySpark"]
-        PG --> AF
-        AF -->|extract_to_bronze.py| BRZ
-        BRZ -->|bronze_to_silver.py\nspark-submit| SLV
+        CSV["8 CSV files<br/>data/raw/*.csv"]
+        BBR["Bronze Parquet<br/>Pandas"]
+        BSV["Silver Parquet<br/>PySpark"]
+        CSV --> BBR --> BSV
     end
 
-    subgraph HOST["🪟 Windows Host  —  ahmed\\SQLEXPRESS"]
-        direction TB
-        PY["load_silver_to_sqlserver.py\nPython 3.11  ·  pyodbc\npyarrow Dataset API"]
-        SS["SQL Server\nfintech_db\n[silver].*"]
-        SG["SQL Server\nfintech_db\n[dbo].* Star Schema"]
-        DR["SQL Server\nfintech_db\n[reporting].*"]
-        DBT["dbt build\ndbt-core 1.8.7\ndbt-sqlserver 1.8.4"]
-        PBI["Power BI Desktop\nImport Mode\nWindows Auth"]
-        PY --> SS
-        SS -->|load_gold.sql\nsqlcmd| SG
-        SG -->|dbt sources| DBT
-        DBT -->|rpt_daily_transactions| DR
-        SG --> PBI
-        DR --> PBI
+    subgraph INCR["Incremental Pipeline — IMPLEMENTED"]
+        direction LR
+        FAPI["FastAPI source<br/>/transactions/next"]
+        PROD["Kafka Producer<br/>confluent-kafka"]
+        KAFKA["Kafka KRaft<br/>topic: transactions_raw"]
+        CONS["Kafka Consumer"]
+        IBR["Bronze JSONL<br/>+ DLQ"]
+        ISV["Silver Parquet<br/>PySpark micro-batch<br/>+ Quarantine"]
+        SSTG["SQL staging<br/>stg.fact_transactions_stage"]
+        FAPI --> PROD --> KAFKA --> CONS --> IBR --> ISV --> SSTG
     end
 
-    SLV -->|"pyodbc · ODBC Driver 18\nTrusted_Connection (Windows Auth)"| PY
+    WH[("SQL Server Express<br/>fintech_db · dbo.* star schema")]
+    DBT["dbt build<br/>data tests + reporting views"]
+    PBI["Power BI Desktop<br/>Import mode · Windows Auth"]
+
+    BSV -->|"load_gold.sql · TRUNCATE+INSERT (atomic)"| WH
+    SSTG -->|"MERGE on transaction_id (idempotent)"| WH
+    WH --> DBT --> PBI
+    WH --> PBI
 ```
 
-### 1.3 Execution Boundary
-
-```
-┌──────────────────────────────────┐   ┌───────────────────────────────────┐
-│  DOCKER BOUNDARY                 │   │  WINDOWS HOST BOUNDARY            │
-│                                  │   │                                   │
-│  • Airflow scheduler + webserver │   │  • run_gold.ps1 (PowerShell)      │
-│  • Postgres metadata DB          │   │  • Python 3.11 venv               │
-│  • extract_to_bronze.py          │   │  • pyodbc + ODBC Driver 18        │
-│  • bronze_to_silver.py (Spark)   │   │  • sqlcmd                         │
-│  • bronze/ and silver/ Parquet   │   │  • SQL Server Express             │
-│                                  │   │  • dbt-core + dbt-sqlserver       │
-│  Trigger: Airflow DAG or         │   │  • Power BI Desktop               │
-│           run_all.ps1 direct exec│   │                                   │
-└──────────────────────────────────┘   └───────────────────────────────────┘
-         │                                          ▲
-         │  Shared volume mount: ./data             │
-         └──────────────────────────────────────────┘
-              Silver Parquet is the handoff artifact
-```
+The batch pipeline **initializes** the star; the incremental pipeline **upserts** new transactions into the same `dbo.fact_transactions`. dbt validates the converged result and publishes reporting views.
 
 ---
 
-## 2. Technology Responsibilities
+## 6. Initial Batch Pipeline Architecture
 
-### 2.1 Component Responsibility Matrix
+**[IMPLEMENTED — LOCAL].** The batch pipeline ingests eight CSV files (~1.3M rows total), transforms them through bronze → silver, loads them into the SQL Server star, and validates with dbt. It is the pipeline that **initializes the warehouse**.
 
-| Component | Runtime | Version | Owns | Does NOT own |
-|---|---|---|---|---|
-| **Apache Airflow** | Docker | 2.9.3 | DAG scheduling; task sequencing; bronze extraction trigger; Spark submit trigger | SQL Server loading; dbt; FK management |
-| **PySpark** | Docker (local mode) | 3.5.1 | Silver type-casting; deduplication; string normalization | CSV reading; SQL loading; any I/O outside the lake |
-| **Pandas** | Docker | 2.2.2 | CSV ingestion in 500K-row chunks; lineage column injection | Transformations; schema enforcement |
-| **PyArrow** | Docker + Host | 16.1.0 | Parquet writes (bronze); Parquet Dataset reads (silver → SQL load) | Type casting (Spark does this) |
-| **SQL Server Express** | Windows host | — | Warehouse storage; FK enforcement; IDENTITY key generation for `transaction_sk`; index serving | ETL; orchestration |
-| **pyodbc** | Windows host | 5.1.0 | ODBC connection to SQL Server; bulk insert via `fast_executemany` | Schema inference; transformation |
-| **sqlcmd** | Windows host | — | Running `setup_warehouse.sql`, `drop_star_constraints.sql`, `load_gold.sql`, `add_star_constraints.sql` | Python execution |
-| **dbt-core** | Windows host | 1.8.7 | Data-quality tests (38); reporting view materialization | Data loading; schema DDL |
-| **dbt-sqlserver** | Windows host | 1.8.4 | SQL Server adapter for dbt; translates dbt commands to T-SQL | Any non-testing, non-view work |
-| **dbt-fabric** | Pinned, unused | 1.8.7 | Future migration target; pinned to ensure version compatibility | Nothing in the current pipeline |
-| **Power BI Desktop** | Windows host | — | Import-mode semantic model; DAX measures; dashboards | Data transformation; loading |
-| **PostgreSQL** | Docker | 15 | Airflow metadata database only | Any project data; warehouse |
-| **PowerShell** | Windows host | 5.1+ | Gold orchestration via `run_gold.ps1` and `run_all.ps1` | Docker management beyond `docker compose` commands |
+### 6.1 Step-by-step
 
-### 2.2 Docker Image
+| Step | Component | Detail |
+|---|---|---|
+| 1. CSV → Bronze | `ingestion/extract_to_bronze.py` (Pandas) | `read_csv(dtype=str, chunksize=500_000)` — all values as strings; appends lineage `_ingested_at_utc`, `_source_file`; writes `data/lake/bronze/<table>/*.parquet`. Idempotent via `shutil.rmtree` before write. |
+| 2. Bronze → Silver | `spark/bronze_to_silver.py` (PySpark, `spark-submit`) | Per-table `SCHEMAS` type casting (`INT/LONG/STRING/DECIMAL(18,2)/DATE`), `trim()` + empty→`NULL`, `dropDuplicates([natural_key])`. Lineage columns dropped. Writes `data/lake/silver/<table>/`. |
+| 3. Silver → SQL `[silver].*` | `ingestion/load_silver_to_sqlserver.py` (pyodbc) | Reads Parquet via `pyarrow.dataset` in 50K batches, `fast_executemany` insert into `fintech_db.[silver].*` (transient ODS). Windows Auth. |
+| 4. Gold load | `sql/drop_star_constraints.sql` → `load_gold.sql` → `add_star_constraints.sql` (`sqlcmd -E`) | Drops 11 FKs, `XACT_ABORT ON` atomic TRUNCATE+INSERT in FK order (`IDENTITY_INSERT` for surrogate dims; `transaction_sk` auto-generated), re-adds 11 FKs. |
+| 5. dbt build | `dbt/fintech` | Source tests + reporting view (see §9). |
+| 6. Power BI | Desktop, Import mode | 8 gold tables + reporting view; 11 relationships; DAX measures (see §10). |
 
-The project uses a custom image built from `Dockerfile`:
-
-```
-Base image:  apache/airflow:2.9.3-python3.11
-OS packages: default-jdk (required for PySpark JVM), procps
-Python pkgs: pyspark==3.5.1, pyarrow==16.1.0, pandas==2.2.2
-```
-
-This image runs as all three Airflow services (init, webserver, scheduler) via the `x-airflow-common` anchor in `docker-compose.yml`. The Java installation is required because PySpark's driver process starts a JVM even in local mode.
-
-### 2.3 Docker Compose Services
-
-The Compose project is named `fintech_lakehouse_new` (explicitly set in `docker-compose.yml`) to prevent namespace collisions with any prior project that might share the same working directory name.
-
-```mermaid
-flowchart LR
-    PG[(postgres:15\nMetadata DB\nVolume: pgdata)]
-    INIT[airflow-init\nOne-time\ndb migrate + admin user]
-    WEB[airflow-webserver\n:8081]
-    SCH[airflow-scheduler\nRuns tasks]
-
-    PG -->|healthcheck| INIT
-    INIT -->|completed_successfully| WEB
-    INIT -->|completed_successfully| SCH
-```
-
-The `airflow-init` service is idempotent: it runs `airflow db migrate` followed by a conditional user creation (`grep -qw admin || airflow users create ...`). Re-running `docker compose up` never fails on a duplicate admin user.
+Orchestration: **Airflow** (Docker) runs steps 1–2; **`run_gold.ps1`** (PowerShell, Windows host) runs steps 3–5 (see §14). The two are bridged by the Silver Parquet on the shared `./data` volume.
 
 ---
 
-## 3. End-to-End Data Flow
+## 7. Incremental Pipeline Architecture
 
-### 3.1 Data Flow Overview
+**[IMPLEMENTED — LOCAL].** An event-driven path that simulates how a real bank receives continuous transaction events and incrementally loads them into the already-initialized warehouse.
+
+**Flow:**
+```
+fact_transactions.csv → FastAPI → Producer → Kafka topic transactions_raw → Consumer
+→ Bronze JSONL → Silver PySpark → Silver Parquet → SQL staging → SQL MERGE → dbt validation → reporting views
+```
+
+**Diagram 2 — Incremental pipeline detailed flow (with reliability seams).**
 
 ```mermaid
 flowchart TD
-    A["📁 data/raw/*.csv\n8 source files\n1.3M+ rows total"]
+    CSV["fact_transactions.csv<br/>(1,000,000 rows, looped)"]
+    API["FastAPI source_api.py<br/>GET /transactions/next<br/>one row per request, EOF wrap"]
+    PROD["producer.py<br/>confluent_kafka Producer<br/>1 event/sec · acks=all · idempotence"]
+    TOPIC["Kafka KRaft<br/>topic: transactions_raw<br/>(no ZooKeeper)"]
+    CONS["consumer.py<br/>confluent_kafka Consumer<br/>manual commit · at-least-once"]
+    BRONZE["Bronze Incremental JSONL<br/>data/incremental/bronze/transactions_raw.jsonl<br/>+ _kafka_topic/_partition/_offset/_consumed_at_utc"]
+    DLQ["DLQ<br/>data/incremental/dlq/transactions_bad.jsonl"]
+    SILVER["silver_incremental.py (PySpark micro-batch)<br/>conform + dedupe + DQ<br/>offset checkpoint"]
+    PARQ["Silver Parquet<br/>data/incremental/silver/silver_batch_id=.../"]
+    QUAR["Quarantine<br/>data/incremental/quarantine/ (_dq_reason)"]
+    STG["load_silver_incremental_to_sql.py<br/>truncate + bulk load → stg.fact_transactions_stage"]
+    PROC["stg.usp_merge_incremental_fact<br/>validate → reject → MERGE → audit log"]
+    FACT[("dbo.fact_transactions<br/>(shared warehouse)")]
+    DBT["dbt build (validation gate)"]
 
-    B["🥉 BRONZE\ndata/lake/bronze/&lt;table&gt;/\nParquet  ·  all values as strings\n+ _ingested_at_utc, _source_file"]
-
-    C["🥈 SILVER\ndata/lake/silver/&lt;table&gt;/\nParquet  ·  typed, trimmed, deduped\nlineage columns removed"]
-
-    D["🗃️ SQL Server [silver].*\n8 ODS tables\nTransient — recreated each run"]
-
-    E1["drop_star_constraints.sql\nDrops 11 FKs"]
-    E2["load_gold.sql\nTRUNCATEs all gold tables\nINSERTs in FK-dependency order\nATOMIC: XACT_ABORT ON"]
-    E3["add_star_constraints.sql\nRe-adds 11 FKs"]
-
-    F["🥇 SQL Server [dbo].*\n7 dimension tables + fact_transactions\nKimball star schema"]
-
-    G["✅ dbt build\n38 data-quality tests\nall-or-nothing: fails fast on violation"]
-
-    H["📊 SQL Server [reporting].*\nrpt_daily_transactions\nView — 731 rows\ndbt-materialized"]
-
-    I["📈 Power BI Desktop\nImport mode\n11 relationships\n21 recommended DAX measures"]
-
-    A -->|"extract_to_bronze.py\nPandas · 500K-row chunks\ndtype=str"| B
-    B -->|"bronze_to_silver.py\nPySpark spark-submit\n--driver-memory 4g"| C
-    C -->|"load_silver_to_sqlserver.py\npyodbc · 50K-row batches\nWindows Auth"| D
-    D --> E1
-    E1 --> E2
-    E2 --> E3
-    E3 --> F
-    F --> G
-    G --> H
-    F --> I
-    H --> I
+    CSV --> API --> PROD --> TOPIC --> CONS
+    CONS -->|valid JSON| BRONZE
+    CONS -->|poison msg| DLQ
+    BRONZE --> SILVER
+    SILVER -->|valid| PARQ
+    SILVER -->|invalid| QUAR
+    PARQ --> STG --> PROC
+    PROC -->|insert/update on transaction_id| FACT
+    PROC -->|rejects| QUAR2["stg.fact_transactions_reject"]
+    FACT --> DBT
 ```
 
-### 3.2 Step-by-Step Data Flow Specification
+### 7.1 Design rationale (the "why" behind each choice)
 
-#### Step 1 — CSV → Bronze (`extract_to_bronze.py`)
-
-| Attribute | Detail |
+| Decision | Why |
 |---|---|
-| **Trigger** | Airflow `PythonOperator` (`extract_csv_to_bronze` task) or direct `docker compose exec` via `run_all.ps1` |
-| **Input** | `data/raw/<table>.csv` (8 files; 1.3M+ total rows) |
-| **Reading strategy** | `pandas.read_csv(dtype=str, chunksize=500_000)` — all columns as strings, preserves raw values exactly |
-| **Transformation** | None to business data; two lineage columns appended: `_ingested_at_utc` (single UTC timestamp for the whole run) and `_source_file` (original CSV filename) |
-| **Idempotency** | `shutil.rmtree()` clears the partition directory before each write; no stale part files can accumulate |
-| **Output** | `data/lake/bronze/<table>/part-XXXX.parquet` (one or more chunked Parquet parts per table) |
-| **Why Pandas** | Bronze is pure I/O: read CSV, add two columns, write Parquet. No distributed computation is required. Pandas is simpler, has no JVM startup overhead, and runs natively in the Airflow Python worker. |
+| **Only `fact_transactions.csv` is streamed** | The fact is the only genuinely append-only, high-velocity table — every card swipe / transfer is a new immutable event. Dimensions are context that changes rarely. |
+| **Dimensions remain batch-loaded** | They are low-cardinality master/reference data shared across the warehouse. Streaming them adds machinery for no benefit and risks a fact referencing a dimension key that has not landed yet. Standard "dimensions first, facts incrementally." |
+| **FastAPI simulates the source system** | Real source systems expose data over an API, not raw files. A `GET /transactions/next` boundary lets the producer pull events over HTTP exactly as from a real REST endpoint — the CSV could later be swapped for a database behind the same URL. |
+| **Kafka in KRaft mode (no ZooKeeper)** | KRaft is the modern, single-process Kafka quorum — fewer moving parts, simpler local container, no separate ZooKeeper ensemble to run or fail. |
+| **Confluent Kafka Producer/Consumer** | The `confluent-kafka` client (librdkafka) is the production-grade, high-throughput Python client with first-class delivery callbacks, idempotence, and manual offset control. |
+| **Bronze Incremental as JSONL** | Newline-delimited JSON is append-friendly, human-readable, schema-flexible for raw events, and trivially consumable by Spark. It preserves the raw event exactly (Medallion Bronze principle). |
+| **Kafka metadata stored** (`_kafka_topic`, `_kafka_partition`, `_kafka_offset`, `_consumed_at_utc`) | Full lineage back to the exact Kafka message, and — crucially — the **offset is the natural watermark** that drives idempotent incremental Silver processing. Mirrors the batch Bronze `_ingested_at_utc`/`_source_file` convention. |
+| **DLQ for poison messages** | A message that cannot be parsed must not crash the consumer or be silently lost. It is routed to a Dead Letter Queue with the raw bytes + error, keeping the pipeline flowing and the bad data auditable. |
+| **Silver Incremental uses PySpark micro-batch** | Reuses the exact batch Silver conforming logic (type casts, trim, `''→NULL`, dedupe on `transaction_id`) on streamed rows, in bounded micro-batches — no Structured Streaming complexity, runs on demand or via a scheduler. |
+| **Checkpoint uses Kafka offsets** | Offsets are monotonic and unique per partition — an exact, replay-safe watermark (better than row counts or wall-clock timestamps). Stored in `data/incremental/_checkpoints/silver_offsets.json`. |
+| **Quarantine exists** | Invalid rows are isolated with a `_dq_reason` rather than dropped — bad data stays auditable and replayable (financial systems must never silently lose a transaction). |
+| **SQL staging is mandatory** | It lets the load **validate and quarantine** (dedupe, null keys, FK existence, null measures) *before* touching the warehouse or aborting a MERGE on an FK violation, and enables a fast, server-side, atomic set-based MERGE. |
+| **SQL `MERGE` is used** | An idempotent upsert keyed on the business key `transaction_id`: insert new transactions, conditionally update existing ones, never duplicate — the core of incremental loading. |
+| **dbt validates instead of replacing the MERGE** | dbt is the post-load quality gate and documentation/reporting layer; it asserts the warehouse is still correct after each MERGE. It does not load or merge data — separation of concerns. |
 
-#### Step 2 — Bronze → Silver (`bronze_to_silver.py`)
+Component files: [`incremental/api/source_api.py`](../incremental/api/source_api.py), [`producer.py`](../incremental/producer.py), [`consumer.py`](../incremental/consumer.py), [`silver_incremental.py`](../incremental/silver_incremental.py), [`sql/create_incremental_staging.sql`](../incremental/sql/create_incremental_staging.sql), [`sql/merge_incremental_fact.sql`](../incremental/sql/merge_incremental_fact.sql), [`load_silver_incremental_to_sql.py`](../incremental/load_silver_incremental_to_sql.py).
 
-| Attribute | Detail |
-|---|---|
-| **Trigger** | Airflow `BashOperator` (`spark_bronze_to_silver` task): `spark-submit --driver-memory 4g --conf spark.local.dir=/opt/data/spark-tmp /opt/airflow/spark/bronze_to_silver.py` |
-| **Input** | `data/lake/bronze/<table>/` Parquet |
-| **Type casting** | Per-table `SCHEMAS` dictionary: every column cast to `INT`, `LONG`, `STRING`, `DECIMAL(18,2)`, or `DATE` |
-| **String normalization** | `F.trim()` applied to all string columns; empty string after trim converted to `NULL` |
-| **Deduplication** | `dropDuplicates([natural_key])` per table — ensures idempotency on re-runs |
-| **Projection** | Explicit `df.select(*cols)` from `SCHEMAS` keys — lineage columns (`_ingested_at_utc`, `_source_file`) are excluded from the projection and never reach silver |
-| **Spark config** | Local mode; `shuffle.partitions=64` (avoids the 200-partition default for a 1M-row dataset); `--driver-memory 4g` |
-| **Output** | `data/lake/silver/<table>/` Parquet (mode=overwrite) |
-| **Why PySpark** | Silver applies type casting and deduplication across 1M+ rows of `fact_transactions`. PySpark's columnar execution engine (backed by Arrow) handles this efficiently and makes the code trivially scalable if the dataset grows. The same `bronze_to_silver.py` works unchanged on a YARN or Kubernetes cluster. |
+---
 
-#### Step 3 — Silver Parquet → SQL Server `[silver].*` (`load_silver_to_sqlserver.py`)
+## 8. Shared Local Warehouse Architecture
 
-| Attribute | Detail |
-|---|---|
-| **Trigger** | `run_gold.ps1` step 2/4: `& $py "ingestion\load_silver_to_sqlserver.py"` |
-| **Connection** | `pyodbc.connect()` — ODBC Driver 18 for SQL Server — `Trusted_Connection=yes` (Windows Auth) |
-| **Schema management** | `IF SCHEMA_ID('silver') IS NULL EXEC('CREATE SCHEMA silver')` — idempotent; `IF OBJECT_ID(...) IS NOT NULL DROP TABLE` — clean recreate each run |
-| **Reading** | `pyarrow.dataset.dataset(...).to_batches(batch_size=50_000)` — columnar streaming, memory-efficient |
-| **Inserting** | `cursor.fast_executemany = True` — enables array binding; `cursor.executemany(insert, rows)` per 50K batch |
-| **Commit strategy** | `conn.commit()` after each table (not per batch) — table-level atomicity |
-| **Output** | `fintech_db.[silver].dim_date`, `[silver].dim_time`, ..., `[silver].fact_transactions` (8 tables) |
+Both pipelines write to **one** warehouse: `fintech_db` on `ahmed\SQLEXPRESS`, schema `dbo` (the Kimball star). They differ only in **how** they write the fact:
 
-#### Step 4 — FK Drop → Gold Load → FK Restore (three `sqlcmd` calls)
-
-All three scripts run sequentially from `run_gold.ps1` step 3/4 via `Invoke-Sql`. The `-b` flag causes `sqlcmd` to return a non-zero exit code on any SQL error severity ≥ 11, surfaced as a PowerShell terminating error.
-
-**`drop_star_constraints.sql`** — drops all 11 foreign key constraints so `TRUNCATE TABLE` is allowed:
-
-| FK Name | Table | References |
+| Aspect | Batch (initialize) | Incremental (keep current) |
 |---|---|---|
-| `FK_fact_date` | `fact_transactions` | `dim_date` |
-| `FK_fact_time` | `fact_transactions` | `dim_time` |
-| `FK_fact_account` | `fact_transactions` | `dim_account` |
-| `FK_fact_peer_account` | `fact_transactions` | `dim_account` |
-| `FK_fact_transaction_type` | `fact_transactions` | `dim_transaction_type` |
-| `FK_fact_decline_reason` | `fact_transactions` | `dim_decline_reason` |
-| `FK_fact_merchant` | `fact_transactions` | `dim_merchant` |
-| `FK_dim_account_location` | `dim_account` | `dim_location` |
-| `FK_dim_account_date` | `dim_account` | `dim_date` |
-| `FK_dim_merchant_location` | `dim_merchant` | `dim_location` |
-| `FK_dim_merchant_date` | `dim_merchant` | `dim_date` |
+| Fact write pattern | `TRUNCATE` + `INSERT … SELECT` (full reload) | `MERGE` on `transaction_id` (upsert delta) |
+| Atomicity | `XACT_ABORT ON` single transaction | `XACT_ABORT ON` single transaction per batch |
+| Dimensions | Loaded/refreshed | Assumed already present (validated as FKs) |
+| Surrogate `transaction_sk` | IDENTITY auto-generated | IDENTITY auto-generated on insert |
+| Staging | `[silver].*` ODS tables | `stg.fact_transactions_stage` (+ `stg.fact_transactions_reject`, `stg.incremental_load_log`) |
 
-**`load_gold.sql`** — atomic TRUNCATE-and-INSERT:
-- `SET XACT_ABORT ON` — any error rolls back the entire transaction automatically
-- `BEGIN TRANSACTION ... COMMIT` — all-or-nothing; a failure never leaves partial gold state
-- TRUNCATE order: `fact_transactions` first, then all dimensions (FK-unconstrained after step above)
-- INSERT order: `dim_date` → `dim_time` → `dim_location` → `dim_transaction_type` → `dim_decline_reason` → `dim_account` → `dim_merchant` → `fact_transactions` (FK parents before children)
-- For tables with IDENTITY columns: `SET IDENTITY_INSERT dbo.<table> ON` before INSERT, `OFF` after — surrogate keys come from silver, not auto-generated
-- Exception: `fact_transactions.transaction_sk` is NOT in the INSERT column list; SQL Server IDENTITY assigns it automatically
-- `dim_date` and `dim_time` have no IDENTITY column; their natural keys (`date_key`, `time_key`) are inserted directly
-
-**`add_star_constraints.sql`** — restores all 11 foreign key constraints, re-enabling referential integrity.
-
-#### Step 5 — dbt Build
-
-| Attribute | Detail |
-|---|---|
-| **Trigger** | `run_gold.ps1` step 4/4: `& $dbt build` from `dbt/fintech/` |
-| **Profile** | `fintech_db` → target `dev` → SQL Server via `windows_login: true` |
-| **Test execution** | 38 tests run against `[dbo].*` sources defined in `models/_sources.yml` |
-| **Model execution** | `models/reporting/rpt_daily_transactions.sql` materialized as a view in `[reporting]` schema |
-| **Schema naming** | `macros/generate_schema_name.sql` passes `custom_schema_name` verbatim — produces `[reporting]`, not `[dbo_reporting]` |
-| **Failure behaviour** | Any test failure causes `dbt build` to exit non-zero; `run_gold.ps1` catches this and throws a terminating error |
-
-#### Step 6 — Power BI
-
-Power BI Desktop connects to `ahmed\SQLEXPRESS` / `fintech_db` in **Import mode** via Windows Authentication. The analyst imports 8 gold tables from `[dbo]` and optionally the `[reporting].rpt_daily_transactions` view, configures 11 relationships, and creates 21 DAX measures as documented in [`POWER_BI.md`](POWER_BI.md).
+The incremental loader **never deletes** warehouse rows and never re-loads history; it only inserts new `transaction_id`s and conditionally updates existing ones. The fact's `UNIQUE` index on `transaction_id` (`UX_fact_transactions_natural_key`) is the shared idempotency anchor for both pipelines and for dbt's uniqueness test.
 
 ---
 
-## 4. Medallion Architecture
+## 9. dbt Validation and Reporting Layer
 
-### 4.1 Layer Responsibilities
+**[IMPLEMENTED — LOCAL].** dbt Core (`dbt-core` 1.8.x + `dbt-sqlserver`) sits **on top** of the gold star as the validation, documentation, and reporting layer. It **reads** `dbo.*` as **sources** and **writes** only reporting **views** (schema `[reporting]`). It does not load data or duplicate the SQL MERGE.
 
-```mermaid
-flowchart LR
-    subgraph BRONZE["🥉 Bronze — Raw Landing"]
-        B1["Immutable record\nof what was received"]
-        B2["All values: string\ndtype=str"]
-        B3["Lineage columns added\n_ingested_at_utc\n_source_file"]
-        B4["No business logic\nNo validation"]
-    end
-    subgraph SILVER["🥈 Silver — Conformed ODS"]
-        S1["Typed per warehouse DDL\nINT · LONG · DATE · DECIMAL"]
-        S2["Strings trimmed\nEmpty → NULL"]
-        S3["Deduplicated\non natural key"]
-        S4["Lineage columns\nremoved"]
-    end
-    subgraph GOLD["🥇 Gold — Dimensional Warehouse"]
-        G1["Kimball star schema\n7 dims + 1 fact"]
-        G2["FK-enforced integrity\n11 constraints"]
-        G3["Surrogate keys\nassigned or generated"]
-        G4["38 dbt tests\nvalidate completeness"]
-    end
-    BRONZE --> SILVER --> GOLD
-```
+### 9.1 Tests (current state)
 
-### 4.2 Bronze Design Principles
+`dbt build` → **PASS=47** (45 data tests + 2 reporting views), WARN=0, ERROR=0.
 
-Bronze is a **faithful, raw landing zone**. Its only obligation is to preserve exactly what the source provided, plus sufficient metadata to audit when and from where the data came.
+| Category | Source / definition | Covers |
+|---|---|---|
+| `unique`, `not_null` | `models/_sources.yml` | All dimension PKs/natural keys + `fact_transactions.transaction_id` (unique + not null) |
+| `relationships` (no orphan FKs) | `models/_sources.yml` | All 7 fact→dimension FK paths |
+| `accepted_values` | `models/_sources.yml` | `is_outbound`/`is_declined`/`is_fx` ∈ {0,1}; `time_bucket`, `customer_tier`, `account_status`, `merchant_size` domains |
+| **Singular sanity tests** | `tests/*.sql` | `assert_fact_transactions_not_empty` (row-count sanity after load), `assert_abs_amount_egp_nonnegative`, `assert_abs_amount_egp_matches_amount`, `assert_declined_have_decline_reason` (severity `warn`) |
 
-- `dtype=str` prevents pandas from interpreting `NULL`-like strings, numeric edge cases, or date ambiguities.
-- The `_ingested_at_utc` timestamp is set once per batch execution — all rows within the same pipeline run share the same lineage timestamp, making batch identification trivial.
-- Directory-clearing idempotency (`shutil.rmtree` before write) means re-running the extraction never produces mixed part files from different pipeline runs.
+### 9.2 Reporting views (`[reporting]` schema)
 
-Bronze is deliberately **not validated**. Schema enforcement happens in silver, where bad types fail loudly with a Spark cast exception rather than silently storing wrong values.
+- `rpt_warehouse_health` — one-row post-load health/reconciliation snapshot (total vs distinct transactions, declined/fx/outbound counts, date span, gross volume). `total_transactions == distinct_transaction_ids` is the at-a-glance "no duplicate facts" check after each incremental MERGE.
+- `rpt_daily_transactions` — daily summary (counts, gross & average ticket) for Power BI.
 
-### 4.3 Silver Design Principles
-
-Silver is the **single source of truth for typed, clean, deduplicated data**. It mirrors the gold warehouse schema exactly, so the SQL `INSERT … SELECT FROM silver.*` in `load_gold.sql` requires no implicit type casting.
-
-The `SCHEMAS` dictionary in `bronze_to_silver.py` defines the authoritative type mapping:
-
-| Category | Types used |
-|---|---|
-| Integer keys and flags | `INT` (`int`) |
-| Large measures | `LONG` (`long`) for `amount_minor`, `fx_amount_minor`, `exchange_rate_e6` |
-| Decimal measures | `DECIMAL(18,2)` for `amount_egp`, `abs_amount_egp` |
-| Dates | `DATE` for `full_date`, `signup_date_key` source column |
-| All text | `STRING` (`string`) with `trim()` and empty-to-null normalization |
-
-Silver does not add columns and does not join tables. The source data is already in star shape; silver's job is conformance, not integration.
-
-### 4.4 Gold Design Principles
-
-Gold is the **analyst-facing dimensional warehouse**. It implements Kimball-style dimensional modelling with surrogate keys, well-defined grain, and enforced referential integrity. It is loaded atomically (single transaction) and is always either fully consistent or untouched (XACT_ABORT ON prevents partial states).
+A **green `dbt build` after a MERGE** is the final quality gate confirming the warehouse remains correct (unique keys, intact FKs, valid domains, sane measures) before Power BI refresh. See [`dbt/fintech/README_DBT_VALIDATION.md`](../dbt/fintech/README_DBT_VALIDATION.md).
 
 ---
 
-## 5. Kimball Star Schema
+## 10. Power BI Desktop Consumption
 
-### 5.1 Schema Overview
+Power BI Desktop connects to `ahmed\SQLEXPRESS` / `fintech_db` in **Import mode** via **Windows Authentication**. The analyst imports the gold tables (and optionally the `[reporting]` views), configures **11 relationships** (including the role-playing `peer_account_key` and inactive signup/opened date links), and builds DAX measures. Reporting remains **Power BI Desktop** for both the local project and the cloud target document (no Power BI Service in scope). Deterministic benchmark values (frozen source) make a stale/mis-connected model easy to detect (see §16.5).
+
+---
+
+## 11. Technology Responsibility Matrix
+
+| Component | Runtime | Pipeline | Owns | Does NOT own |
+|---|---|---|---|---|
+| **Apache Airflow** 2.9.3 | Docker | Batch | DAG scheduling; bronze extraction + Spark submit triggers | SQL Server load; dbt; incremental |
+| **Pandas** 2.2.2 | Docker | Batch | CSV ingestion (500K chunks); lineage columns | Transformations |
+| **PySpark** 3.5.x | Docker | Batch + Incremental | Type casting, dedupe, conformance (batch & incremental Silver) | I/O outside the lake; SQL load |
+| **FastAPI / uvicorn** | Host venv | Incremental | Simulated source `GET /transactions/next` | Kafka; persistence |
+| **confluent-kafka** | Host venv | Incremental | Producer + Consumer (delivery callbacks, manual commit) | Transformation |
+| **Apache Kafka (KRaft)** 7.8.3 | Docker | Incremental | Durable event backbone; topic `transactions_raw` | Business logic |
+| **PyArrow** | Docker + Host | Both | Parquet writes/reads | Type casting |
+| **SQL Server Express** | Windows host | Both | Warehouse storage; FK enforcement; IDENTITY `transaction_sk`; MERGE; staging | ETL; orchestration |
+| **pyodbc** 5.x | Windows host | Both | ODBC connection; `fast_executemany`; staging load + proc call | Transformation |
+| **sqlcmd** | Windows host | Batch | `setup_warehouse.sql`, FK drop/add, `load_gold.sql` | Python execution |
+| **dbt-core** 1.8.x | Windows host | Both | Data-quality tests; reporting views; docs | Data loading; DDL |
+| **dbt-sqlserver** 1.8.4 | Windows host | Both | SQL Server adapter | Non-testing/non-view work |
+| **dbt-fabric** 1.8.7 (pinned, unused) | Host | — | Future Fabric migration target | Nothing in the current pipeline |
+| **Power BI Desktop** | Windows host | Both | Import semantic model; DAX; dashboards | Transformation |
+| **PostgreSQL** 15 | Docker | Batch | Airflow metadata DB only | Project/warehouse data |
+| **PowerShell** 5.1+ | Windows host | Both | `run_gold.ps1`, `run_all.ps1`; incremental run commands | Docker beyond `docker compose` |
+
+---
+
+## 12. Medallion Architecture
+
+Both pipelines follow Bronze → Silver → Gold, with increasing strictness:
+
+| Layer | Batch artifact | Incremental artifact | Principle |
+|---|---|---|---|
+| **Bronze** | `data/lake/bronze/<table>/*.parquet` (strings + `_ingested_at_utc`, `_source_file`) | `data/incremental/bronze/transactions_raw.jsonl` (raw event + `_kafka_*`, `_consumed_at_utc`) + DLQ | Faithful raw landing; **append-only**; no validation |
+| **Silver** | `data/lake/silver/<table>/` (typed, trimmed, deduped) | `data/incremental/silver/silver_batch_id=…/` + **quarantine** + offset **checkpoint** | Conform to warehouse types; dedupe on natural key; quarantine invalid |
+| **Gold** | `dbo.*` star (full reload) | `dbo.fact_transactions` (MERGE upsert) + `stg.*` staging/reject/audit | Kimball star; FK-enforced; idempotent; dbt-validated |
+
+Bronze is deliberately **not validated** — schema/DQ enforcement happens at Silver (Spark casts) and again at the SQL staging/MERGE boundary; bad data fails loudly or is quarantined, never silently stored.
+
+---
+
+## 13. Kimball Star Schema
+
+**[IMPLEMENTED — LOCAL].** 7 dimensions + `fact_transactions`, defined in `sql/01_create_star.sql`.
 
 ```mermaid
 erDiagram
     dim_date {
-        int date_key PK "YYYYMMDD natural key — no IDENTITY"
+        int date_key PK "YYYYMMDD natural key"
         date full_date
-        tinyint day
-        tinyint month
-        tinyint quarter
-        smallint year
-        bit is_weekend
     }
     dim_time {
-        int time_key PK "HHMM natural key — no IDENTITY"
-        tinyint hour_of_day
-        varchar time_bucket "Morning/Afternoon/Evening/Night"
-        bit is_daytime
-        varchar hour_label
+        int time_key PK "HHMM natural key"
+        varchar time_bucket
     }
     dim_location {
-        int location_key PK "IDENTITY — outrigger shared by accounts and merchants"
+        int location_key PK "IDENTITY outrigger"
         nvarchar city
-        nvarchar governorate
-        nvarchar country
     }
     dim_account {
-        int account_key PK "IDENTITY; IDENTITY_INSERT ON during load"
-        varchar account_id "Business natural key — UNIQUE constraint"
+        int account_key PK "IDENTITY"
+        varchar account_id "natural key UNIQUE"
         int location_key FK
-        char currency "ISO 4217"
-        varchar age_band
-        varchar acquisition_channel
         int signup_date_key FK
-        varchar customer_tier "Standard / Premium / Business"
-        varchar account_status "Active / Dormant / Suspended / Closed"
     }
     dim_merchant {
-        int merchant_key PK "IDENTITY; IDENTITY_INSERT ON during load"
+        int merchant_key PK "IDENTITY"
         int location_key FK
-        varchar merchant_id "Business natural key — UNIQUE constraint"
-        nvarchar merchant_name
-        varchar merchant_category
-        varchar merchant_size "Enterprise / Mid-Market / SME"
         int opened_date_key FK
     }
     dim_transaction_type {
-        int transaction_type_key PK "IDENTITY; IDENTITY_INSERT ON during load"
-        varchar transaction_type_name
-        varchar transaction_group "Payment / Transfer / Withdrawal"
+        int transaction_type_key PK "IDENTITY"
     }
     dim_decline_reason {
-        int decline_reason_key PK "IDENTITY; IDENTITY_INSERT ON during load"
-        varchar decline_reason_name
+        int decline_reason_key PK "IDENTITY"
     }
     fact_transactions {
-        bigint transaction_sk PK "IDENTITY — auto-generated; NOT in INSERT list"
+        bigint transaction_sk PK "IDENTITY auto-generated"
         int date_key FK
         int time_key FK
-        int account_key FK "NOT NULL — primary actor"
-        int peer_account_key FK "NULL for non-P2P — role-playing INACTIVE link"
+        int account_key FK "NOT NULL"
+        int peer_account_key FK "NULL for non-P2P (role-playing)"
         int transaction_type_key FK "NOT NULL"
-        int decline_reason_key FK "NULL for approved transactions"
-        int merchant_key FK "NULL for non-merchant transactions"
-        varchar transaction_id "Business natural key — UNIQUE index"
-        varchar mc_transaction_id "Mastercard ref — nullable"
-        varchar ach_transfer_id "ACH ref — nullable"
-        bigint amount_minor "In piastres — avoids float"
-        decimal amount_egp "Signed EGP decimal"
-        decimal abs_amount_egp "Always positive — used for gross volume"
-        bigint fx_amount_minor "NULL for EGP transactions"
-        bigint exchange_rate_e6 "Rate × 1000000 — avoids float"
+        int decline_reason_key FK "NULL if approved"
+        int merchant_key FK "NULL if non-merchant"
+        varchar transaction_id "natural key UNIQUE index"
+        decimal amount_egp
+        decimal abs_amount_egp
         bit is_outbound
         bit is_declined
         bit is_fx
     }
-
     fact_transactions }o--|| dim_date : "date_key (active)"
     fact_transactions }o--|| dim_time : "time_key"
     fact_transactions }o--|| dim_account : "account_key (active)"
     fact_transactions }o--o| dim_account : "peer_account_key (inactive)"
     fact_transactions }o--|| dim_transaction_type : "transaction_type_key"
-    fact_transactions }o--o| dim_decline_reason : "decline_reason_key (nullable)"
-    fact_transactions }o--o| dim_merchant : "merchant_key (nullable)"
+    fact_transactions }o--o| dim_decline_reason : "decline_reason_key"
+    fact_transactions }o--o| dim_merchant : "merchant_key"
     dim_account }o--|| dim_location : "location_key"
     dim_account }o--|| dim_date : "signup_date_key (inactive)"
     dim_merchant }o--|| dim_location : "location_key"
     dim_merchant }o--|| dim_date : "opened_date_key (inactive)"
 ```
 
-### 5.2 Dimension Design
-
-#### `dim_date` and `dim_time` — Natural Key Dimensions
-
-`dim_date` and `dim_time` are the only two dimensions in the schema that do **not** use IDENTITY. Their primary keys are stable, human-meaningful integers:
-
-- `date_key` = YYYYMMDD (e.g., `20240115`) — deterministic, globally unique, readable in SQL
-- `time_key` = HHMM (e.g., `1430`) — 1,440 distinct values, one per minute of the day
-
-Because these keys are inherently non-colliding across all time and already present in the source data, surrogate key generation adds no value. `load_gold.sql` inserts them without `SET IDENTITY_INSERT ON` because the columns carry no IDENTITY definition.
-
-#### Dimensions with Surrogate IDENTITY Keys
-
-`dim_location`, `dim_account`, `dim_merchant`, `dim_transaction_type`, and `dim_decline_reason` all have `INT NOT NULL IDENTITY(1,1)` primary keys. During the gold load, `SET IDENTITY_INSERT dbo.<table> ON` is used to pass the surrogate key values from silver directly into the table. SQL Server does not auto-generate new IDENTITY values when `IDENTITY_INSERT` is ON.
-
-This means surrogate keys for these dimensions originated in the source data generation stage and are preserved intact through bronze → silver → gold. They are stable across pipeline re-runs.
-
-#### `fact_transactions.transaction_sk` — Auto-Generated IDENTITY
-
-`transaction_sk` is the only key that SQL Server **truly auto-generates** during the gold load. It is a `BIGINT IDENTITY(1,1)` and is **excluded from the INSERT column list** in `load_gold.sql`. A fresh IDENTITY sequence is assigned on every full reload (TRUNCATE resets the seed).
-
-The natural key `transaction_id` (VARCHAR 50, UNIQUE non-clustered index) is the business identifier used for deduplication and cross-system traceability. `transaction_sk` is the surrogate for join performance.
-
-#### Business Natural Keys Retained in Fact
-
-Three natural keys are retained in `fact_transactions` for auditability:
-- `transaction_id` — primary event identifier
-- `mc_transaction_id` — Mastercard reference (nullable)
-- `ach_transfer_id` — ACH reference (nullable)
-
-### 5.3 Role-Playing Dimension
-
-`dim_account` is linked to `fact_transactions` through two foreign keys:
-
-| FK | Column | Cardinality | Active in Power BI |
-|---|---|---|---|
-| `FK_fact_account` | `account_key` | Many-to-One | **Yes** — primary actor |
-| `FK_fact_peer_account` | `peer_account_key` | Many-to-One | **No** — P2P counterparty; activate with `USERELATIONSHIP()` |
-
-`peer_account_key` is NULL for all non-P2P transactions. Power BI allows only one active relationship between two tables, so the peer link is kept inactive and accessed via DAX `USERELATIONSHIP()` in the P2P Volume measure.
-
-### 5.4 Outrigger Dimensions
-
-Two dimensions serve as outriggers — they are referenced by other dimensions, not only by the fact table:
-
-**`dim_location`** (19 rows):
-- `dim_account.location_key → dim_location.location_key` (customer city)
-- `dim_merchant.location_key → dim_location.location_key` (merchant city)
-
-**`dim_date`** (731 rows):
-- `fact_transactions.date_key → dim_date.date_key` (transaction date, **active**)
-- `dim_account.signup_date_key → dim_date.date_key` (account opening, **inactive** in Power BI)
-- `dim_merchant.opened_date_key → dim_date.date_key` (merchant opening, **inactive** in Power BI)
-
-The two signup/opened date links are kept inactive in Power BI so that a date slicer filters transactions, not account or merchant populations.
-
-### 5.5 Indexes on `fact_transactions`
-
-Five indexes are defined in `01_create_star.sql`:
-
-| Index | Type | Columns | Purpose |
-|---|---|---|---|
-| `PK_fact_transactions` | Clustered (implicit) | `transaction_sk` | Row identity |
-| `UX_fact_transactions_natural_key` | Unique non-clustered | `transaction_id` | Idempotency; business key lookup |
-| `IX_fact_transactions_date` | Non-clustered | `date_key` INCLUDE (`amount_egp`, `is_declined`, `is_fx`) | Date-range queries (most common pattern) |
-| `IX_fact_transactions_account` | Non-clustered | `account_key` INCLUDE (`date_key`, `amount_egp`, `is_outbound`) | Account activity lookups |
-| `IX_fact_transactions_declined` | Filtered non-clustered | `is_declined, decline_reason_key` WHERE `is_declined=1` | Decline analysis (4.25% of rows) |
-| `IX_fact_transactions_fx` | Filtered non-clustered | `is_fx` WHERE `is_fx=1` | FX analysis (4.38% of rows) |
-
-The two filtered indexes are particularly important for decline and FX reporting: they cover only the minority subset, keeping index size small while dramatically accelerating those specific query patterns.
+**Key modeling points:** `dim_date`/`dim_time` use stable natural keys (no IDENTITY); the other dimensions use IDENTITY surrogate keys passed through with `IDENTITY_INSERT` during the batch load. `dim_account` is a **role-playing** dimension (active `account_key`, inactive `peer_account_key`). `dim_location` and `dim_date` act as **outriggers**. `fact_transactions` carries a `UNIQUE` index on `transaction_id` (the business key used by both the batch dedupe and the incremental MERGE) and five purpose-built indexes including two **filtered** indexes for decline/FX subsets. (Full column-level detail and index list retained from prior revisions in `sql/01_create_star.sql`.)
 
 ---
 
-## 6. Hybrid Design Rationale
+## 14. Local Orchestration and Runtime
 
-### 6.1 The Core Constraint
+### 14.1 Batch orchestration
+- **`run_all.ps1`** — full rebuild: `docker compose up`, runs `extract_to_bronze.py` + `bronze_to_silver.py` directly inside the Airflow scheduler container, then calls `run_gold.ps1`.
+- **`run_gold.ps1`** — gold runner (Windows host): silver→SQL load, FK-drop → `load_gold.sql` → FK-add, then `dbt build`. Uses `$ErrorActionPreference="Stop"` + `Invoke-Sql` exit-code checks for fail-fast atomicity.
+- **Airflow DAG `fintech_lakehouse`** — `extract_csv_to_bronze` → `spark_bronze_to_silver` → `gold_handoff` (a marker task; Airflow cannot invoke host PowerShell/Windows-Auth SQL). Boundary: **Airflow owns the lake; PowerShell owns the warehouse.**
 
-The fundamental reason for the hybrid architecture is a single, hard technical constraint:
+### 14.2 Incremental orchestration & runtime
+Run manually (or later by a scheduler) as discrete stages:
+- **Kafka** — `incremental/docker-compose.yml` (KRaft, project `fintech_kafka`), topic `transactions_raw` created with `--if-not-exists`.
+- **Source + Producer + Consumer** — host Python **3.11** venv (`.venv-incremental`); `confluent-kafka` requires Python **3.11/3.12** (no wheels for 3.13/3.14).
+- **Silver Incremental (PySpark)** — **runs in a Spark container** (`apache/spark:3.5.1`, `spark-submit`) because the host has **no JDK**; PySpark is a JVM engine. This is the supported path on this machine (host `python silver_incremental.py` fails with `ModuleNotFoundError`/no-Java).
+- **SQL load + MERGE** — host `python load_silver_incremental_to_sql.py` (pyodbc, Windows Auth); applies the staging DDL + proc and processes only new `silver_batch_id` batches.
+- **dbt** — `dbt build` on the host.
 
-> **Windows Authentication (NTLM) to SQL Server cannot be performed from a Linux container without Kerberos ticket forwarding, which requires a domain controller, keytab configuration, and significant infrastructure that is incompatible with a local development environment.**
+---
 
-The SQL Server instance is `ahmed\SQLEXPRESS` — a Windows named instance that accepts only Windows Authentication in this configuration. The `.env.example` file explicitly documents this:
+## 15. Incremental Reliability Design
 
-```
-# Leave WH_USER / WH_PASSWORD UNSET -> Trusted_Connection (Windows auth).
-# Do NOT set them: this project is Windows-auth only.
-```
+**[IMPLEMENTED — LOCAL].** Reliability is layered end-to-end:
 
-### 6.2 Why Docker Only Hosts Bronze and Silver
-
-```mermaid
-flowchart LR
-    subgraph WHY_DOCKER["Why Docker?"]
-        D1["✅ No Windows Auth needed\nParquet is filesystem I/O"]
-        D2["✅ Airflow is a Linux-native workload\nImage exists: apache/airflow:2.9.3"]
-        D3["✅ PySpark runs on JVM\nworks identically on any OS"]
-        D4["✅ Reproducibility\nSame image everywhere"]
-    end
-    subgraph WHY_NOT_GOLD["Why not Gold in Docker?"]
-        N1["❌ SQL Server Windows Auth\nrequires NTLM / Kerberos"]
-        N2["❌ Linux container cannot\nimpersonate Windows user"]
-        N3["❌ No domain controller\nin local dev setup"]
-    end
-```
-
-Bronze and silver workloads have no SQL Server dependency at all. They read and write files to a shared Docker volume (`./data` mounted as `/opt/data`). This makes them fully portable across operating systems.
-
-### 6.3 Why SQL Server Stays on the Windows Host
-
-SQL Server Express is installed directly on the Windows host as a named instance (`ahmed\SQLEXPRESS`). Moving it into Docker would require:
-
-1. Switching to SQL Server for Linux (a different product variant)
-2. Abandoning Windows Authentication entirely (SQL Server for Linux uses SQL logins by default)
-3. Reconfiguring the entire security model (credentials in environment variables, secrets management)
-
-None of these trade-offs are appropriate for a local data warehouse that intentionally uses zero-credential authentication.
-
-### 6.4 Why dbt Runs on the Host
-
-dbt-sqlserver connects to `ahmed\SQLEXPRESS` via ODBC Driver 18 for SQL Server using `windows_login: true` in the profile. This connection requires the calling process to be running **as a Windows user** — the ODBC driver passes the current Windows identity to SQL Server. A Linux container process has no Windows identity. Therefore, `dbt build` must run on the Windows host.
-
-The `profiles.yml.example` documents this:
-```yaml
-windows_login: true   # Windows (trusted) auth — no SQL login
-```
-
-### 6.5 Why Windows Authentication
-
-| Property | Windows Auth | SQL Auth |
+| Mechanism | Where | Guarantee |
 |---|---|---|
-| **Credentials at rest** | None — OS token | Password in `.env` or environment variable |
-| **Credentials in transit** | NTLM/Kerberos token | Password in connection string |
-| **Risk on dev machine** | None | Password exposed to shell history, logs |
-| **Management overhead** | None — always available | Create login, manage rotation |
-| **Local dev suitability** | Ideal | Overkill for single-user local setup |
+| **At-least-once consumer write** | `consumer.py` | Manual commit, `enable.auto.commit=False` — no event acknowledged before it is durably stored |
+| **Write before Kafka offset commit** | `consumer.py` | Bronze line is `flush`+`fsync`-ed, **then** the offset is committed — a crash mid-write replays, never loses |
+| **DLQ for poison messages** | `consumer.py` → `dlq/transactions_bad.jsonl` | Unparseable messages are isolated with raw bytes + error; consumer keeps running |
+| **Bronze append-only** | JSONL landing | Immutable raw history; never mutated in place |
+| **Silver checkpoint file** | `_checkpoints/silver_offsets.json` | Per-partition high-water offset → process only new Bronze rows |
+| **Silver idempotency** | `silver_incremental.py` | Deterministic `silver_batch_id` from offset range + dynamic partition overwrite → re-runs never duplicate |
+| **Quarantine with `_dq_reason`** | `quarantine/` | Invalid rows isolated, not dropped (auditable, replayable) |
+| **Non-underscore `silver_batch_id` partition** | Silver output | Partition folder `silver_batch_id=…` (not `_`-prefixed) so pandas/pyarrow/Spark readers don't treat it as hidden and skip it |
+| **SQL staging table** | `stg.fact_transactions_stage` | Validate/quarantine before the warehouse; transient (truncated per run) |
+| **SQL transaction + `XACT_ABORT ON`** | `stg.usp_merge_incremental_fact` | All-or-nothing per batch; any error rolls back; `FAILED` recorded after rollback |
+| **SQL audit / load log** | `stg.incremental_load_log` | One row per (batch, attempt); filtered `UNIQUE` index makes a second SUCCESS impossible |
+| **Idempotent `MERGE` on `transaction_id`** | merge proc | Insert new, conditionally update changed, no-op identical replays |
+| **No accidental deletes** | merge proc | Deliberately **no** `WHEN NOT MATCHED BY SOURCE` — warehouse rows absent from a batch are never deleted |
+| **dbt build as final gate** | `dbt/fintech` | Post-MERGE validation of uniqueness, FKs, domains, and sanity |
 
-For a single-developer local project, Windows Authentication is both simpler and more secure than managing SQL logins.
+**Two-layer idempotency:** batch-level (a `SUCCESS` batch is skipped) **and** row-level (MERGE on `transaction_id`). A forced reprocess inserts/updates nothing extra.
 
 ---
 
-## 7. Orchestration Design
+## 16. Data Quality and Validation Strategy
 
-### 7.1 Execution Modes
+Quality is enforced progressively across both pipelines:
 
-The project supports three execution modes:
+1. **Bronze — none (intentional).** Strings preserved exactly (batch `dtype=str`; incremental raw JSON). Failures surface downstream, not via silent coercion. Poison Kafka messages → DLQ.
+2. **Silver — conform + DQ.** Spark casts (bad value → `NULL`), `trim()`/`''→NULL`, dedupe on `transaction_id`. Incremental Silver additionally **quarantines** rows failing DQ with a `_dq_reason`; counts reconcile (`valid + quarantined == input`).
+3. **SQL DDL constraints.** `NOT NULL`, `UNIQUE` (incl. `transaction_id`), 11 FKs.
+4. **SQL staging validation (incremental).** Before MERGE, the proc rejects (to `stg.fact_transactions_reject`) duplicates, null keys, null measures, and **FK-not-found** rows — so a single bad row can't abort the MERGE. Audit counts in `stg.incremental_load_log`; the data-loss invariant is `rows_valid + rows_rejected == rows_staged`.
+5. **dbt tests (final gate).** 45 data tests (uniqueness, not-null, relationships/orphan-FK, accepted values, plus row-count/measure sanity) — see §9.
+6. **Power BI benchmark check.** Frozen-source deterministic values (e.g., Transaction Count **1,000,000**, Gross Volume ≈ **689,181,271 EGP**, Declined **42,478** / 4.25%, FX **43,783**) make stale/mis-connected models obvious.
+
+---
+
+## 17. Security and Authentication Model
+
+**[IMPLEMENTED — LOCAL].**
+
+- **Windows (Trusted) Authentication everywhere for SQL Server** — `Trusted_Connection=yes` (pyodbc), `sqlcmd -E`, `windows_login: true` (dbt). **No SQL logins, no passwords, no secrets at rest** for the warehouse. `WH_USER`/`WH_PASSWORD` exist as an unused code path; `.env.example` says *"this project is Windows-auth only."*
+- **The hybrid boundary is a security feature, not just a constraint:** Windows Auth (NTLM) cannot be performed from a Linux container without Kerberos/keytab/domain-controller infrastructure that is impractical locally. Hence SQL Server, the SQL loaders, dbt, and Power BI run **on the Windows host**; lake workloads run in Docker.
+- **Kafka (local):** `PLAINTEXT://localhost:9092`, single-node KRaft, named volume `kafka_kraft`, project `fintech_kafka` — local development only; no external exposure, no auth (appropriate for a local broker, called out as a limitation in §21).
+- **Repository is secret-free:** `.env` and `~/.dbt/profiles.yml` are gitignored; only `*.example` files are committed. Airflow `admin/admin` is local-only.
+
+> **[PLANNED — CLOUD]** identity is entirely different (Microsoft Entra ID, workspace roles, service principals) — see §18; do not conflate it with the local Windows-Auth model.
+
+---
+
+## 18. Microsoft Fabric Cloud Target Architecture
+
+> **[PLANNED — CLOUD] — Companion / target design only.** This section summarizes the *Fabric Medallion Cloud Solution Document (v1.1, "Updated SQL/dbt Gold Warehouse approach")*. It describes a **target** Microsoft Fabric architecture and is **not implemented in this repository**.
+>
+> **Inspection caveat (from the document):** the supplied Fabric pipeline URL points to a **private Fabric workspace item**; a public request returned only the Microsoft Fabric **sign-in screen**, so **exact pipeline activity names, linked-service details, run history, SQL view definitions, and dbt model definitions were not externally inspectable**. The cloud design is therefore based on the known solution context and should be finalized with screenshots / an exported pipeline definition for exact evidence.
+
+### 18.1 Target flow
+
+**Diagram 3 — Microsoft Fabric cloud target flow (planned).**
 
 ```mermaid
 flowchart TD
-    A{Execution Mode}
-    A --> B["run_all.ps1\nFull rebuild\nDocker + Gold + dbt"]
-    A --> C["run_gold.ps1\nGold only\n(silver Parquet exists)"]
-    A --> D["Airflow UI\n:8081 → trigger DAG\nthen run_gold.ps1 manually"]
+    SRC["Cloud-hosted CSV files<br/>(transaction datasets)"]
+    ADF["Fabric Data Factory pipeline<br/>parameterized · ForEach · Copy activity"]
+    BRZ["Lakehouse / OneLake — Bronze<br/>raw Delta tables/files + ingestion metadata"]
+    SLV["Silver — conformed SQL views/tables<br/>Fabric Warehouse SQL endpoint<br/>type cast · trim · dedupe · validate"]
+    GLD["Gold — Fabric Warehouse<br/>SQL views + dbt Core (dbt-fabric)<br/>enriched fact + KPI marts"]
+    PBI["Power BI Desktop<br/>(reporting target)"]
+
+    SRC --> ADF --> BRZ --> SLV --> GLD --> PBI
 ```
 
-### 7.2 `run_all.ps1` — Full Pipeline
+### 18.2 Target components (as documented)
 
-```mermaid
-flowchart TD
-    R1["docker compose up -d --build\nStarts all 4 services"] --> R2
-    R2["Start-Sleep -Seconds 15\nAllows Postgres to become healthy"] --> R3
-    R3["docker compose exec -T airflow-scheduler bash -lc\n'python ingestion/extract_to_bronze.py &&\nspark-submit ... spark/bronze_to_silver.py'"] --> R4
-    R4["run_gold.ps1\n(called as sub-script)"]
-```
-
-> **Important:** `run_all.ps1` does **not** trigger the Airflow DAG. It runs `extract_to_bronze.py` and `bronze_to_silver.py` directly inside the running `airflow-scheduler` container via `docker compose exec`. No DAG run is recorded in the Airflow metadata database when using this path. The Airflow UI at `:8081` will show no new DAG execution history.
-
-This design was chosen for simplicity: `run_all.ps1` is a one-command rebuild that does not require the Airflow DAG scheduler to have processed a trigger or waited for a schedule interval.
-
-### 7.3 `run_gold.ps1` — Gold Runner
-
-```mermaid
-flowchart TD
-    ENV["Load .env → set WH_SERVER, WH_DATABASE\nResolve Python 3.11 interpreter via 'py -3.11'"]
-    S1["Step 1/4\nsetup_warehouse.sql\nEnsures [silver] schema exists"]
-    CHK{"dbo.fact_transactions\nexists?"}
-    DDL["01_create_star.sql\nCreate star tables, FKs, indexes"]
-    S2["Step 2/4\nload_silver_to_sqlserver.py\nSilver Parquet → fintech_db.[silver].*\n8 tables · 50K-row batches"]
-    S3A["Step 3/4a\ndrop_star_constraints.sql\nDrop 11 FKs"]
-    S3B["load_gold.sql\nTRUNCATE + INSERT (atomic)"]
-    S3C["add_star_constraints.sql\nRe-add 11 FKs"]
-    S4["Step 4/4\ndbt build\n38 tests + reporting view"]
-    DONE["✅ Complete\ndbo.* star validated\nreporting.rpt_daily_transactions built"]
-
-    ENV --> S1 --> CHK
-    CHK -->|No| DDL --> S2
-    CHK -->|Yes| S2
-    S2 --> S3A --> S3B --> S3C --> S4 --> DONE
-```
-
-`run_gold.ps1` uses `$ErrorActionPreference = "Stop"` and a custom `Invoke-Sql` function that checks `$LASTEXITCODE` after every `sqlcmd` call. Any failure at any step terminates the script immediately, preventing partial gold states.
-
-### 7.4 Airflow DAG — `fintech_lakehouse`
-
-When the Airflow UI is used instead of `run_all.ps1`, the DAG provides full task-level visibility and retry management:
-
-```mermaid
-flowchart LR
-    T1["extract_csv_to_bronze\nPythonOperator\nCalls extract_to_bronze.extract_csvs()"]
-    T2["spark_bronze_to_silver\nBashOperator\nspark-submit --driver-memory 4g\n--conf spark.local.dir=/opt/data/spark-tmp"]
-    T3["gold_handoff\nBashOperator\nEcho only — signals silver is ready"]
-
-    T1 -->|"retries=2\nretry_delay=2min"| T2 -->|"retries=2\nretry_delay=2min"| T3
-```
-
-| Property | Value |
+| Area | Fabric target (planned) |
 |---|---|
-| `dag_id` | `fintech_lakehouse` |
-| `schedule` | `@daily` |
-| `start_date` | `2024-01-01` |
-| `catchup` | `False` |
-| `owner` | `data-eng` |
+| **Ingestion & orchestration** | **Fabric Data Factory pipeline** — parameterized (`sourceFolder`, `fileName`, `targetLayer`, `targetTable`, `loadBatchId`, `runDate`), **ForEach** over a file list, **Copy** activity per file, then SQL/dbt activities. Optional advanced orchestration via Workflow Orchestration Manager / Fabric **Apache Airflow** jobs. |
+| **Storage** | **Fabric Lakehouse / OneLake**, **Delta Lake / Delta Parquet** tables across layers. |
+| **Bronze** | Raw landing in the Lakehouse with ingestion metadata (`_source_file`, `_load_timestamp`, `_pipeline_run_id`). |
+| **Silver** | **Conformed SQL views/tables** in the Fabric **Warehouse / SQL endpoint** (type casting, trimming, dedupe by `transaction_id`, validation) — note: **SQL-view-based**, not PySpark. |
+| **Gold** | **Fabric Warehouse** business marts via **SQL queries/views + dbt Core with the `dbt-fabric` adapter** (tested, documented, lineage-tracked). Recommended Gold outputs: `gold_fact_transactions_enriched`, `gold_daily_kpi`, `gold_monthly_kpi`, `gold_transaction_type_kpi`, `gold_customer_segment_kpi`, `gold_merchant_performance`, `gold_decline_analysis`, `gold_fx_analysis`. |
+| **Reporting** | **Power BI Desktop** (Service publishing explicitly out of scope in the document). |
+| **Identity & governance** | **Microsoft Entra ID** identities; least-privilege **workspace roles**; **service principals** for automation; secrets kept out of code (Key Vault patterns); **GitHub + Fabric Git** for source control. |
+| **Operations** | Fabric pipeline **monitoring**/run history; **retries** for transient failures (not for schema/DQ errors); **capacity** management (reduce concurrency, optimize models, avoid full refreshes, scale SKU); deterministic batch IDs to avoid duplicate Gold records. |
+| **CI/CD (future maturity)** | GitHub + Fabric Git integration; dev/test/prod workspaces or deployment pipelines. |
 
-The `gold_handoff` task emits a message instructing the operator to run `run_gold.ps1` on the Windows host. It is a marker task, not an executor — Airflow cannot invoke host PowerShell directly from a Linux container.
-
-### 7.5 Why Airflow Is Not the End-to-End Orchestrator
-
-Airflow cannot complete the full pipeline alone because:
-
-1. The gold loading step requires Windows Authentication to SQL Server — unavailable in the Linux container where Airflow runs.
-2. `dbt build` requires a host Python environment with `dbt-sqlserver` and ODBC Driver 18 — not installed in the Airflow image (to avoid bloating it with host-specific dependencies).
-3. `sqlcmd` is not installed in the Airflow image.
-
-The boundary is clean: **Airflow owns the lake (Docker-native workloads), PowerShell owns the warehouse (Windows-native workloads).**
+The document explicitly mirrors the **local** Gold approach (SQL + dbt) as a deliberate design alignment, and treats CI/CD, enterprise orchestration, and monitoring as a **future maturity path**.
 
 ---
 
-## 8. Data Quality Framework
+## 19. Local vs Cloud Architecture Comparison
 
-### 8.1 Quality Layers Overview
+> Left column = **[IMPLEMENTED — LOCAL]**; right column = **[PLANNED — CLOUD]** (Fabric document).
 
-Quality is enforced at every layer, with increasing strictness from bronze to gold:
+| Area | Local implementation | Fabric cloud target |
+|---|---|---|
+| **Source** | 8 CSV files in `data/raw/` (incl. `dim_location`); fact replayed via FastAPI for the stream | Cloud-hosted CSV files (document lists 7 datasets; extra attributes modeled in dims) |
+| **Orchestration** | Airflow (Docker) + PowerShell (`run_gold.ps1`); incremental run scripts | Fabric Data Factory pipeline (ForEach), optionally Fabric Airflow |
+| **Bronze** | Parquet (batch) / JSONL (incremental) on local disk | Lakehouse / OneLake Delta tables |
+| **Silver** | PySpark conformance to Parquet (+ quarantine, checkpoint) | Conformed **SQL views/tables** in Fabric Warehouse |
+| **Gold** | `dbo.*` star: batch full-reload + incremental `MERGE` | Fabric Warehouse SQL views + dbt models (KPI marts) |
+| **Warehouse** | SQL Server Express (`fintech_db`) | Fabric Warehouse |
+| **dbt** | `dbt-sqlserver` (tests + reporting views) | `dbt-fabric` (Gold models, tests, docs) |
+| **Reporting** | Power BI Desktop (Import, Windows Auth) | Power BI Desktop |
+| **Authentication** | Windows (Trusted) Auth; no secrets | Microsoft Entra ID; workspace roles; service principals |
+| **Monitoring** | PowerShell exit codes; dbt build result; `stg.incremental_load_log` | Fabric monitoring + pipeline run history |
+| **Runtime** | Local Docker + Windows host (hybrid) | Fabric capacity (SaaS) |
+| **Cost / operational scope** | Free/local; single developer | Fabric capacity (SKU) cost; tenant/workspace governance |
+
+**Diagram 4 — Local (implemented) vs Cloud (planned) at a glance.**
 
 ```mermaid
 flowchart LR
-    L1["📁 Bronze\nNo validation\nPreserves raw state\nFailed casts caught in Silver"]
-    L2["🥈 Silver\nPySpark cast exceptions\nStop pipeline on type mismatch\nDeduplication on natural key"]
-    L3["🔑 SQL Server DDL\nNOT NULL constraints\nUNIQUE indexes\n11 FK constraints"]
-    L4["✅ dbt Tests\n38 automated tests\nPost-load validation gate"]
-    L5["📊 Power BI\nBenchmark verification\nDetects stale/disconnected data"]
-
-    L1 --> L2 --> L3 --> L4 --> L5
-```
-
-### 8.2 Bronze Quality
-
-Bronze applies **no validation intentionally**. By reading all columns as `dtype=str`, it guarantees no data loss from implicit type coercion. A source file with `"N/A"` in an integer column will be preserved exactly, rather than silently becoming `NaN` or raising an unhandled exception during ingestion.
-
-The tradeoff: bronze can contain garbage data. This is acceptable because silver is the enforcement boundary.
-
-### 8.3 Silver Quality
-
-PySpark enforces the schema at cast time. If a value in bronze cannot be cast to the declared type (e.g., a non-numeric string in an `INT` column), Spark will return `NULL` for that value by default. The deduplication step then ensures each natural key appears exactly once, making silver idempotent with respect to re-runs.
-
-### 8.4 SQL Server DDL Constraints
-
-The star schema DDL in `01_create_star.sql` enforces:
-- `NOT NULL` on all required columns (fact FKs, dimension PKs, business attributes)
-- `UNIQUE` index on `fact_transactions.transaction_id` (natural key)
-- `UNIQUE` implicit on all dimension PKs via PRIMARY KEY constraints
-- 11 foreign key constraints restored after each gold load by `add_star_constraints.sql`
-
-### 8.5 dbt Data Tests
-
-The 38 dbt tests in `models/_sources.yml` form the **post-load data-quality gate**. They run after the gold load completes and before the pipeline is considered successful.
-
-| Category | Count | Tables Covered |
-|---|---|---|
-| `unique` | 10 | All 7 dimensions (PKs + natural keys where defined) + `fact_transactions.transaction_id` |
-| `not_null` | 14 | All dimension PKs, natural keys, and 4 non-nullable fact FKs |
-| `accepted_values` | 7 | `time_bucket`, `customer_tier`, `account_status`, `merchant_size`, `is_outbound`, `is_declined`, `is_fx` |
-| `relationships` | 7 | All 7 FK paths from `fact_transactions` to dimensions |
-
-The `relationships` tests directly verify referential integrity at the data level — they confirm that every FK value in the fact table resolves to a valid row in the referenced dimension. This catches any silver → gold insert ordering issues that might slip past FK constraints.
-
-### 8.6 Reporting Validation
-
-`docs/POWER_BI.md` Section 8 provides a table of deterministic benchmark values that the analyst can verify after importing data into Power BI:
-
-| Measure | Expected Value |
-|---|---|
-| Transaction Count | 1,000,000 |
-| Gross Volume (EGP) | ≈ 689,181,271 |
-| Average Ticket (EGP) | 689.18 |
-| Declined Transactions | 42,478 |
-| Decline Rate % | 4.25% |
-| FX Transactions | 43,783 |
-| Active Accounts | 39,795 |
-| P2P Transactions | 154,667 |
-
-Because the source data is frozen (CSV files committed to the repository), these values are deterministic. A mismatch indicates either a stale PBIX file, a failed pipeline run, or a wrong database connection.
-
----
-
-## 9. Security Model
-
-### 9.1 Authentication Architecture
-
-```mermaid
-flowchart LR
-    subgraph HOST["Windows Host"]
-        WIN["Windows User\n(running the session)"]
-        PY["Python\nload_silver_to_sqlserver.py"]
-        DBT["dbt build"]
-        PSH["PowerShell\nrun_gold.ps1"]
-        SQL["SQL Server Express\nauthenticates via NTLM"]
-        WIN -->|"Trusted_Connection=yes\nODBC Driver 18"| PY --> SQL
-        WIN -->|"windows_login: true\ndbt-sqlserver"| DBT --> SQL
-        WIN --> PSH -->|"-E flag (Windows auth)\nsqlcmd"| SQL
+    subgraph LOCAL["IMPLEMENTED — Local"]
+        direction TB
+        L1["CSV + FastAPI/Kafka"]
+        L2["Pandas / PySpark<br/>Bronze + Silver"]
+        L3["SQL Server Express<br/>load_gold + MERGE"]
+        L4["dbt-sqlserver"]
+        L5["Power BI Desktop"]
+        L1 --> L2 --> L3 --> L4 --> L5
     end
-    subgraph DOCKER["Docker"]
-        AF["Airflow\n(Linux processes)"]
-        PG["PostgreSQL\nairflow/airflow (internal only)"]
-        AF -->|"psycopg2\nSQL Alchemy"| PG
+    subgraph CLOUD["PLANNED — Microsoft Fabric"]
+        direction TB
+        C1["Cloud CSV"]
+        C2["Data Factory ForEach<br/>OneLake Bronze (Delta)"]
+        C3["Silver SQL views"]
+        C4["Fabric Warehouse Gold<br/>SQL + dbt-fabric"]
+        C5["Power BI Desktop"]
+        C1 --> C2 --> C3 --> C4 --> C5
     end
+    LOCAL -. "same Medallion + Kimball pattern,<br/>different runtime/identity" .-> CLOUD
 ```
-
-### 9.2 No SQL Logins
-
-The project contains no SQL Server logins, no passwords, and no credential storage of any kind for the warehouse layer:
-
-- `load_silver_to_sqlserver.py` uses `Trusted_Connection=yes` (Windows Auth)
-- `run_gold.ps1` uses `sqlcmd -E` flag (Windows Auth)
-- `profiles.yml.example` uses `windows_login: true`
-- `.env.example` explicitly says: `# Do NOT set them: this project is Windows-auth only`
-- `WH_USER` and `WH_PASSWORD` environment variables exist as a code-path option in `load_silver_to_sqlserver.py` but are never set or used
-
-### 9.3 Docker Isolation
-
-The Compose project is named `fintech_lakehouse_new`, which scopes all containers, networks, and volumes to this name. This prevents resource collisions with any other Compose project that might share the same directory name.
-
-The Postgres database used for Airflow metadata is accessible only within the Docker network (`postgresql+psycopg2://airflow:airflow@postgres/airflow`). It is not published to the host network.
-
-### 9.4 dbt Profile Isolation
-
-The dbt profile `fintech_db` is distinct from any other dbt profile the user might have (e.g., a legacy `fintech` profile from a prior project). The profile name is documented in `dbt_project.yml`:
-
-```yaml
-profile: fintech_db
-```
-
-This ensures `dbt build` in this project cannot accidentally connect to the wrong target.
-
-### 9.5 Secret-Free Repository
-
-The repository is designed to contain no secrets:
-
-- `.env` is gitignored; only `.env.example` is committed
-- `~/.dbt/profiles.yml` is the user's home directory; only `profiles.yml.example` is committed
-- No passwords appear in any committed file
-- The Airflow admin credentials (`admin`/`admin`) are for local development only and are not used to protect any sensitive data
 
 ---
 
-## 10. Design Trade-offs
+## 20. Design Trade-offs
 
-### 10.1 Full Refresh vs Incremental Loading
-
-| Aspect | Current (Full Refresh) | Alternative (Incremental MERGE) |
-|---|---|---|
-| **Complexity** | Low — TRUNCATE + INSERT | High — need watermark, CDC, or change detection |
-| **Runtime** | ~5–10 min for 1M rows | Seconds for small deltas |
-| **Idempotency** | Perfect — re-run = same result | Requires dedup logic for late-arriving data |
-| **Risk** | Pipeline failure leaves gold empty until re-run | Partial MERGE can leave inconsistent state |
-| **Data volume** | Suitable for ≤ 10M rows | Required above that threshold |
-
-**Decision:** Full refresh was chosen because the dataset (1M rows) processes in acceptable time, the TRUNCATE-and-reload pattern is simple to reason about and verify, and the `XACT_ABORT ON` transaction ensures the warehouse is never in a partially-loaded state. Incremental loading is a Phase 2 improvement.
-
-### 10.2 Local PySpark vs Alternative Compute
-
-| Aspect | Local PySpark | Pandas-only | Cloud Spark (EMR, Databricks) |
-|---|---|---|---|
-| **Performance at 1M rows** | ✅ Adequate | ✅ Adequate | Overkill (cluster startup overhead) |
-| **Scalability** | ✅ Same code scales to 100M+ | ❌ Memory-bound | ✅ Scales further |
-| **Portability** | ✅ Same Spark API everywhere | N/A | ✅ |
-| **Local setup complexity** | Moderate (Java required) | Low | High (cloud account, cost) |
-| **Portfolio signal** | ✅ Demonstrates Spark skills | Limited | ✅ Higher signal |
-
-**Decision:** PySpark in local mode was chosen for its combination of scalability headroom and portfolio value. The silver transformation code is identical to what would run on a Spark cluster — only the `SparkSession` configuration changes.
-
-### 10.3 Hybrid Execution vs Pure Docker
-
-| Aspect | Hybrid (current) | Pure Docker |
-|---|---|---|
-| **Windows Auth** | ✅ Available on host | ❌ Not available in Linux container |
-| **SQL Server** | ✅ Named instance, local | Would require SQL Server for Linux + SQL Auth |
-| **Credential management** | ✅ Zero credentials | Requires SQL login + secrets management |
-| **Portability** | ❌ Windows-only host | ✅ Cross-platform |
-| **Complexity** | Moderate (two execution contexts) | Higher (SQL Server in Docker + credential config) |
-
-**Decision:** Hybrid is the pragmatic choice for a local Windows development environment. The trade-off is reduced portability: the project currently requires Windows as the host OS for the gold layer.
-
-### 10.4 No dbt Seeds
-
-dbt Seeds are designed for small, static reference data that is version-controlled inside the dbt project itself. This project intentionally does not use seeds for the dimensional CSVs because:
-
-1. The dimensional data (dim_account.csv, dim_merchant.csv, etc.) contains 40,000+ rows of account data — far beyond what seeds are designed to handle efficiently.
-2. The dimensional data participates in the full medallion pipeline (bronze → silver → SQL Server silver → gold). Seeds would create an alternative, parallel data path that bypasses bronze/silver entirely.
-3. Seeds would materialize directly into the `dbo` schema as dbt tables, conflicting with the DDL-defined gold tables that have IDENTITY, FKs, and filtered indexes already.
-
-Reference data (`dim_transaction_type`, `dim_decline_reason`) is also sourced through the pipeline rather than seeds, maintaining the single data path principle.
-
-### 10.5 No Fabric Migration (Yet)
-
-`dbt-fabric==1.8.7` is pinned in `requirements.txt` for forward compatibility. The comment in `requirements.txt` explains the pinning constraint:
-
-```
-dbt-fabric==1.8.7   # pinned: dbt-sqlserver 1.8.4 needs <1.8.8
-```
-
-The migration path to Microsoft Fabric is documented and requires two changes only:
-1. Swap `type: sqlserver` to `type: fabric` in `~/.dbt/profiles.yml`
-2. Replace `load_silver_to_sqlserver.py` with a Fabric `COPY INTO` loader
-
-The Airflow DAG, PySpark jobs, SQL star schema DDL, and dbt models (`_sources.yml`, `rpt_daily_transactions.sql`) are all unchanged by a Fabric migration.
-
-### 10.6 No SQL Authentication
-
-SQL Authentication was deliberately excluded rather than omitted. The `.env.example` contains explicit guidance against using it:
-
-```
-# Leave WH_USER / WH_PASSWORD UNSET -> Trusted_Connection (Windows auth).
-# Do NOT set them: this project is Windows-auth only.
-```
-
-For a local development warehouse on a single-user Windows machine, SQL Authentication provides no security benefit over Windows Authentication while introducing the risk of credential storage in environment files.
-
-### 10.7 Reporting View vs Additional Fact Tables
-
-`rpt_daily_transactions` is a thin aggregation view, not a separate aggregate fact table. It is materialized as a `VIEW` (not a `TABLE`) in the `[reporting]` schema, meaning:
-
-- It computes on-demand from `fact_transactions` and `dim_date`
-- It consumes no additional storage
-- At 1M rows in Import mode, the aggregation happens at Power BI import time in under a second
-- The view is provided as a convenience demonstration of the dbt reporting layer, not as a performance optimization
-
-The `docs/POWER_BI.md` explicitly marks it as optional for Power BI consumers.
+- **Full refresh (batch) vs incremental MERGE.** Batch uses `TRUNCATE`+`INSERT` (simple, perfectly idempotent) to **initialize**; the **incremental** pipeline adds the `MERGE` path to absorb deltas without reloading history. Both coexist on the same fact.
+- **Local PySpark vs alternatives.** PySpark in local mode gives scalability headroom and identical code to a cluster; the same conforming logic is reused by batch and incremental Silver.
+- **Hybrid execution vs pure Docker.** Hybrid is required for Windows-Auth SQL Server; the trade-off is Windows-only host for the warehouse layer.
+- **Kafka KRaft vs ZooKeeper.** KRaft removes a whole subsystem for a single-node local broker.
+- **Staging + MERGE vs direct load.** Staging enables pre-MERGE validation/quarantine and a fast, atomic, set-based upsert — worth the extra table.
+- **Conditional MERGE update vs insert-only.** Existing `transaction_id`s are updated only when a value actually differs (identical replays are no-ops), balancing idempotency with support for late corrections. (A strict ledger might prefer insert-only + reversal entries — noted as an option.)
+- **dbt validates, does not transform the fact.** Keeps loading (SQL) and validation/reporting (dbt) cleanly separated.
+- **Windows Auth vs SQL Auth.** Zero-credential, more secure for a single-user local machine.
 
 ---
 
-## 11. Future Evolution
+## 21. Known Limitations
 
-These are realistic next steps that do not change the current architecture. Each item is independently implementable.
-
-### 11.1 Incremental Gold Loading
-
-Replace the TRUNCATE-and-reload pattern in `load_gold.sql` with SQL Server `MERGE` statements:
-
-```sql
--- Conceptual pattern (not yet implemented)
-MERGE dbo.dim_account AS target
-USING silver.dim_account AS source
-ON target.account_id = source.account_id
-WHEN MATCHED THEN UPDATE SET ...
-WHEN NOT MATCHED THEN INSERT ...;
-```
-
-This would reduce nightly processing time from ~5–10 minutes to seconds for small delta loads.
-
-### 11.2 SCD Type 2 for Slowly Changing Attributes
-
-Three columns are natural SCD Type 2 candidates based on the domain model:
-- `dim_account.age_band`
-- `dim_account.customer_tier`
-- `dim_merchant.merchant_size`
-
-Implementing Type 2 requires adding `effective_date`, `expiry_date`, and `is_current` columns to these dimensions, and updating the silver-to-gold merge logic to version changes rather than overwrite them.
-
-### 11.3 Microsoft Fabric Migration
-
-The migration path is already prepared:
-
-```
-Step 1: Update ~/.dbt/profiles.yml
-        type: sqlserver → type: fabric
-        Add: account, database, schema, warehouse
-
-Step 2: Replace ingestion/load_silver_to_sqlserver.py
-        with a Fabric COPY INTO loader
-
-Unchanged: dags/, spark/, sql/01_create_star.sql,
-           dbt/fintech/models/, dbt/fintech/macros/
-```
-
-### 11.4 Streaming Silver Layer
-
-The silver conformance logic in `bronze_to_silver.py` can be adapted to Spark Structured Streaming by replacing `spark.read.parquet()` with `spark.readStream.parquet()` and pointing it at a Kafka or Azure Event Hubs source. The type-casting logic and `SCHEMAS` dictionary are unchanged.
-
-### 11.5 dbt Semantic Layer
-
-The 21 DAX measures defined in `docs/POWER_BI.md` can be formalized as dbt Metrics (via the dbt Semantic Layer / MetricFlow). This would make the metric definitions vendor-neutral and consumable by any tool that supports the Semantic Layer API.
-
-### 11.6 Cross-Platform Gold (Alternative Path)
-
-If Windows-only execution becomes a limitation, an alternative architecture could use SQL Server for Linux in a container with SQL Authentication and a secrets manager (e.g., Azure Key Vault, HashiCorp Vault). This would make the entire pipeline run in Docker on any OS. The trade-off is the introduction of SQL logins and a secrets management dependency.
+- **Windows-only host** for the warehouse/dbt/Power BI layers (Windows-Auth dependency).
+- **No JDK on the host** → Silver (batch & incremental) must run via Spark in Docker; host `python silver_incremental.py` fails (`ModuleNotFoundError: pyspark` / no Java).
+- **`confluent-kafka` needs Python 3.11/3.12** (no wheels for 3.13/3.14); the venv must be created with `py -3.11`.
+- **Local Kafka is single-node, PLAINTEXT, no auth** — development-grade durability/security only (RF=1, one partition).
+- **FastAPI source is a simulation** that loops the CSV; at the API→producer hop it is effectively at-most-once (a fetched-but-unpublished row is lost) — acceptable for a simulated source, not a real ledger.
+- **Incremental against an already-full `fintech_db`** yields mostly MERGE no-ops (the CSV replays existing `transaction_id`s) — inserts are best demonstrated against a fact that does not already hold those ids.
+- **[PLANNED — CLOUD] Fabric internals not verified** — the private pipeline could not be inspected; activity names, linked services, run history, and exact SQL/dbt definitions are unconfirmed.
 
 ---
 
-*Architecture version: 1.0 | Project version: 1.0 | Last verified: 2026-06-29*  
-*All statements verified against: `Dockerfile`, `docker-compose.yml`, `requirements.txt`, `fintech_pipeline_dag.py`, `extract_to_bronze.py`, `bronze_to_silver.py`, `load_silver_to_sqlserver.py`, `01_create_star.sql`, `load_gold.sql`, `drop_star_constraints.sql`, `add_star_constraints.sql`, `setup_warehouse.sql`, `dbt_project.yml`, `_sources.yml`, `rpt_daily_transactions.sql`, `generate_schema_name.sql`, `profiles.yml.example`, `run_all.ps1`, `run_gold.ps1`, `.env.example`*
+## 22. Future Evolution
+
+- **Scheduler for the incremental pipeline** (Airflow/cron) to run the consumer + Silver + MERGE on a cadence.
+- **SCD Type 2** for `dim_account.customer_tier`/`age_band`, `dim_merchant.merchant_size`.
+- **dbt incremental models** (`materialized='incremental'`, `unique_key='transaction_id'`) for Gold marts on top of the warehouse fact.
+- **Fabric migration** (the prepared path): swap dbt `type: sqlserver → fabric`; replace local loaders with Data Factory Copy/`COPY INTO`; lift the SQL star + dbt models largely unchanged.
+- **CI/CD** (GitHub + Fabric Git), monitoring, and capacity governance per the cloud document's maturity path.
+- **Load-audit reporting view** over `stg.incremental_load_log` (documented but intentionally not in the default dbt build, to avoid a hard `stg` dependency).
+
+---
+
+## 23. Appendix: Key Run Commands
+
+**Batch (full local rebuild):**
+```powershell
+cd "f:\NTI FOLDER\NTI INCREMENTAL\fintech-lakehouse"
+.\run_all.ps1            # docker up + bronze + silver + run_gold.ps1
+# or gold-only (silver Parquet already present):
+.\run_gold.ps1
+```
+
+**Incremental (4 stages):**
+```powershell
+# 1) Kafka (KRaft)
+cd incremental ; docker compose up -d
+docker exec kafka kafka-topics --bootstrap-server localhost:9092 `
+  --create --if-not-exists --topic transactions_raw --partitions 1 --replication-factor 1
+# 2) source + consumer + producer (Python 3.11 venv; separate terminals)
+.\.venv-incremental\Scripts\python.exe -m uvicorn api.source_api:app --port 8000   # from incremental\api use source_api:app
+.\.venv-incremental\Scripts\python.exe consumer.py
+.\.venv-incremental\Scripts\python.exe producer.py
+# 3) Silver Incremental via Dockerized Spark (no host JDK)
+cd "f:\NTI FOLDER\NTI INCREMENTAL\fintech-lakehouse"
+docker run --rm -v "${PWD}\data:/data" -v "${PWD}\incremental:/app" `
+  -e BRONZE_JSONL=/data/incremental/bronze/transactions_raw.jsonl `
+  -e SILVER_DIR=/data/incremental/silver -e QUARANTINE_DIR=/data/incremental/quarantine `
+  -e CHECKPOINT_FILE=/data/incremental/_checkpoints/silver_offsets.json `
+  apache/spark:3.5.1 /opt/spark/bin/spark-submit /app/silver_incremental.py
+# 4) SQL staging + MERGE, then dbt validation
+$env:WH_DATABASE="fintech_db" ; python incremental\load_silver_incremental_to_sql.py
+cd dbt\fintech ; dbt build
+```
+
+**dbt validation / docs:**
+```powershell
+cd "f:\NTI FOLDER\NTI INCREMENTAL\fintech-lakehouse\dbt\fintech"
+dbt debug ; dbt build ; dbt docs generate
+```
+
+---
+
+## 24. Appendix: Evidence / Validation Checklist
+
+**[IMPLEMENTED — LOCAL] — verified:**
+- [x] Batch: bronze (Pandas) → silver (PySpark) → `[silver].*` → atomic gold load → dbt → Power BI.
+- [x] Incremental Bronze: producer→Kafka→consumer appends JSONL with `_kafka_topic/_partition/_offset/_consumed_at_utc`; poison message routed to DLQ; consumer commits only after durable write.
+- [x] Incremental Silver: offset checkpoint; quarantine with `_dq_reason`; idempotent re-run = 0 new; partition folder `silver_batch_id=…` readable by pandas/pyarrow.
+- [x] SQL incremental: staging + reject + `incremental_load_log`; `XACT_ABORT` rollback verified (forced failure → fact unchanged, FAILED logged, exit 1); idempotent rerun skips SUCCESS batch; conditional MERGE update (1 changed row → 1 update, others untouched); `rows_valid + rows_rejected == rows_staged`; no orphan FKs; `COUNT(*) == COUNT(DISTINCT transaction_id)`.
+- [x] dbt: `dbt debug` OK; `dbt build` PASS=47 (45 data tests + 2 reporting views), WARN=0, ERROR=0; `dbt docs generate` writes `manifest.json`/`catalog.json`/`index.html`.
+- [x] Reporting reconciliation: `rpt_warehouse_health` shows `total_transactions == distinct_transaction_ids` (1,000,000).
+
+**[PLANNED — CLOUD] — NOT verified (evidence required):**
+- [ ] Fabric pipeline canvas / activity names / parameters (private workspace — not inspectable).
+- [ ] Lakehouse/Warehouse item names, SQL view + dbt-fabric model definitions, run history.
+- [ ] Entra ID roles / service principal configuration; capacity/SKU; CI/CD wiring.
+
+---
+
+*Architecture version: 2.0 (local batch + local incremental implemented; Microsoft Fabric cloud target planned) | Last verified: 2026-06-30*
+*Local statements verified against repository source (Dockerfiles, `docker-compose.yml`(s), `extract_to_bronze.py`, `bronze_to_silver.py`, `load_silver_to_sqlserver.py`, `sql/*.sql`, `incremental/*` producer/consumer/api/silver/sql/loader, `dbt/fintech/*`, `run_*.ps1`). Cloud statements sourced from the Fabric Medallion Cloud Solution Document (v1.1), whose referenced private Fabric pipeline was not externally inspectable.*

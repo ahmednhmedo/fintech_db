@@ -16,6 +16,12 @@ A medallion lakehouse on the modern stack, fully local:
 
 ---
 
+---
+# PART 1 — BATCH / INITIAL LOAD PIPELINE
+> Everything in this section covers the **one-time bulk load**: 8 CSVs → Bronze → Silver → SQL Server star schema → dbt.
+> If you are looking for the streaming incremental pipeline, jump to [Part 2 — Incremental Load Pipeline](#part-2--incremental-load-pipeline).
+---
+
 ## One-time setup
 
 1. **SQL Server**: `fintech_db` exists on `ahmed\SQLEXPRESS`. The star tables are
@@ -372,3 +378,239 @@ All commands run from the `fintech-lakehouse` folder. The Compose project name i
 ## Migrating to the cloud later (phase 2)
 Swap the dbt `type` (→ `fabric`) and replace the host loader with `COPY INTO`
 (Fabric/OneLake). The DAG, Spark jobs, SQL star, and dbt tests are unchanged.
+
+---
+
+---
+# PART 2 — INCREMENTAL LOAD PIPELINE
+> Everything below this point covers the **event-driven streaming pipeline**: FastAPI → Kafka → Bronze JSONL → Silver Parquet → SQL MERGE → dbt.
+> The batch pipeline (Part 1) must have been run at least once before starting this — the dimension tables must exist in SQL Server.
+---
+
+## Running the Incremental Pipeline
+
+The incremental pipeline streams new transactions event-by-event through Kafka into the warehouse,
+on top of the existing batch Gold layer. It is completely independent — it does not modify or rerun
+the batch pipeline.
+
+```
+FastAPI (port 8000)
+  → producer.py → Kafka (port 9092, Docker KRaft)
+  → consumer.py → data/incremental/bronze/transactions_raw.jsonl
+  → silver_incremental.py (Docker Spark)
+  → load_silver_incremental_to_sql.py → stg.* staging + MERGE → dbo.fact_transactions
+  → dbt build (same fintech project, validates the full warehouse)
+```
+
+All commands below assume you are in the `fintech-lakehouse` folder unless otherwise noted.
+
+### Prerequisites
+- Batch pipeline already run at least once (dimensions must exist in SQL Server).
+- Docker Desktop running.
+- Incremental venv already created (one-time):
+  ```powershell
+  cd incremental
+  py -3.11 -m venv .venv-incremental
+  .\.venv-incremental\Scripts\Activate.ps1
+  pip install -r requirements-incremental.txt
+  ```
+
+### Step 1 — Start Kafka (Terminal A)
+
+```powershell
+cd "f:\NTI FOLDER\NTI INCREMENTAL\fintech-lakehouse\incremental"
+docker compose up -d
+
+# Create the topic (safe to re-run; skipped if it already exists)
+docker exec kafka kafka-topics --bootstrap-server localhost:9092 `
+  --create --if-not-exists --topic transactions_raw --partitions 1 --replication-factor 1
+
+# Verify
+docker compose ps        # kafka should show "running"
+```
+
+### Step 2 — Start FastAPI source (Terminal B)
+
+```powershell
+cd "f:\NTI FOLDER\NTI INCREMENTAL\fintech-lakehouse\incremental\api"
+..\.venv-incremental\Scripts\Activate.ps1
+uvicorn source_api:app --host 0.0.0.0 --port 8000
+```
+
+Verify: open `http://localhost:8000/transactions/next` in a browser — you should see a JSON transaction.
+
+### Step 3 — Start the consumer FIRST (Terminal C)
+
+Always start the consumer before the producer so no messages are missed.
+
+```powershell
+cd "f:\NTI FOLDER\NTI INCREMENTAL\fintech-lakehouse\incremental"
+.\.venv-incremental\Scripts\Activate.ps1
+python consumer.py
+```
+
+Expected output:
+```
+Starting consumer | broker=localhost:9092 | topic=transactions_raw
+Consumed transaction_id=TXN... -> Bronze [partition 0 @ offset 0]
+```
+
+### Step 4 — Start the producer (Terminal D)
+
+```powershell
+cd "f:\NTI FOLDER\NTI INCREMENTAL\fintech-lakehouse\incremental"
+.\.venv-incremental\Scripts\Activate.ps1
+python producer.py
+```
+
+Expected output (1 event per second):
+```
+Published #1 transaction_id=TXN...
+Delivered -> transactions_raw [partition 0 @ offset 0]
+```
+
+Let it run for 30–60 seconds, then press **CTRL+C** in the producer terminal to stop it.
+Press **CTRL+C** in the consumer terminal once it has drained (a few seconds after the producer stops).
+
+### Step 5 — Run Silver incremental (Docker Spark)
+
+> **Important:** PySpark cannot run directly on this host (no Java installed).
+> Always use the Docker Spark command below — never `python silver_incremental.py` directly.
+
+```powershell
+cd "f:\NTI FOLDER\NTI INCREMENTAL\fintech-lakehouse"
+docker run --rm `
+  -v "${PWD}\data:/data" `
+  -v "${PWD}\incremental:/app" `
+  -e BRONZE_JSONL=/data/incremental/bronze/transactions_raw.jsonl `
+  -e SILVER_DIR=/data/incremental/silver `
+  -e QUARANTINE_DIR=/data/incremental/quarantine `
+  -e CHECKPOINT_FILE=/data/incremental/_checkpoints/silver_offsets.json `
+  apache/spark:3.5.1 /opt/spark/bin/spark-submit /app/silver_incremental.py
+```
+
+Takes ~30–45 seconds (Spark JVM startup). Look for the final summary line:
+```
+[silver] batch=b_000000000_000000098 | new=99 | silver=99 | quarantined=0 | checkpoint advanced.
+```
+
+### Step 6 — Load Silver into SQL Server (MERGE)
+
+```powershell
+cd "f:\NTI FOLDER\NTI INCREMENTAL\fintech-lakehouse"
+& (& py -3.11 -c "import sys; print(sys.executable)").Trim() "incremental\load_silver_incremental_to_sql.py"
+```
+
+Expected output:
+```
+Silver batches: 1 on disk | 0 already loaded | 1 to process
+staged 99 rows for batch b_000000000_000000098
+batch b_... -> staged=99 valid=99 inserted=N updated=M rejected=0
+Done in 0.4s | inserted=N updated=M rejected=0 | failed_batches=0
+```
+
+> **Note on `inserted=0`:** If these transaction IDs were already loaded by the initial batch pipeline,
+> the MERGE correctly skips them (idempotency). This is expected behaviour, not an error.
+
+### Step 7 — Run dbt build
+
+```powershell
+cd "f:\NTI FOLDER\NTI INCREMENTAL\fintech-lakehouse\dbt\fintech"
+dbt build
+```
+
+Expected result:
+```
+Done. PASS=47 WARN=0 ERROR=0 SKIP=0 TOTAL=47
+```
+
+### Incremental Pipeline Quick Reference
+
+| Task | Command |
+|---|---|
+| Start Kafka | `cd incremental && docker compose up -d` |
+| Create Kafka topic | `docker exec kafka kafka-topics --bootstrap-server localhost:9092 --create --if-not-exists --topic transactions_raw --partitions 1 --replication-factor 1` |
+| Start FastAPI | `cd incremental\api && uvicorn source_api:app --host 0.0.0.0 --port 8000` |
+| Start consumer | `cd incremental && python consumer.py` |
+| Start producer | `cd incremental && python producer.py` |
+| Run Silver (Docker Spark) | See Step 5 above |
+| Run SQL MERGE loader | `py -3.11 incremental\load_silver_incremental_to_sql.py` |
+| Run dbt | `cd dbt\fintech && dbt build` |
+| Check Bronze records | `(Get-Content data\incremental\bronze\transactions_raw.jsonl \| Measure-Object -Line).Lines` |
+| Check audit log | `sqlcmd -S "ahmed\SQLEXPRESS" -E -C -d fintech_db -Q "SELECT * FROM stg.incremental_load_log ORDER BY log_id DESC;"` |
+
+---
+
+## Clean Shutdown (Full Project — Batch + Incremental)
+
+Follow this order to shut everything down cleanly before closing your PC.
+Running in the wrong order is harmless but this order is the cleanest.
+
+### Step 1 — Stop the producer and consumer
+
+In each terminal where `producer.py` or `consumer.py` is running, press **CTRL+C**.
+Both scripts shut down cleanly: the producer flushes in-flight messages, the consumer commits
+its final offset and triggers a group rebalance.
+
+### Step 2 — Stop FastAPI and dbt docs
+
+If you have FastAPI (port 8000) or dbt docs (port 8082) running, stop them:
+
+```powershell
+# Stop FastAPI (port 8000)
+$pid8000 = Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess
+if ($pid8000) { Stop-Process -Id $pid8000 -Force; Write-Host "FastAPI stopped" }
+
+# Stop dbt docs (port 8082)
+$pid8082 = Get-NetTCPConnection -LocalPort 8082 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess
+if ($pid8082) { Stop-Process -Id $pid8082 -Force; Write-Host "dbt docs stopped" }
+```
+
+### Step 3 — Stop Kafka
+
+```powershell
+cd "f:\NTI FOLDER\NTI INCREMENTAL\fintech-lakehouse\incremental"
+docker compose down
+```
+
+This stops and removes the Kafka container and its network. The `kafka_kraft` volume (broker data)
+is **kept** by default — add `-v` only if you want to wipe the topic and start completely fresh.
+
+### Step 4 — Stop Airflow (batch pipeline)
+
+```powershell
+cd "f:\NTI FOLDER\NTI INCREMENTAL\fintech-lakehouse"
+docker compose down
+```
+
+This stops Airflow webserver, scheduler, and Postgres. The `pgdata` volume (Airflow metadata,
+DAG run history) is **kept** — add `-v` only for a full metadata reset (see above).
+
+### Step 5 — Verify everything is stopped
+
+```powershell
+docker ps --format "table {{.Names}}\t{{.Status}}"
+
+# All four ports should be free:
+@(8000, 8081, 8082, 9092) | ForEach-Object {
+    $c = Get-NetTCPConnection -LocalPort $_ -ErrorAction SilentlyContinue
+    if ($c) { Write-Host "Port $_ still in use" } else { Write-Host "Port $_ free" }
+}
+```
+
+All four ports should report **free**. You can now safely close VSCode and shut down your PC.
+
+### What is safe after shutdown
+
+| Data | Survives shutdown | Location |
+|---|---|---|
+| SQL Server warehouse (`fintech_db`) | Yes | Windows host — SQL Server service |
+| Bronze/Silver lake files | Yes | `data/` on host filesystem |
+| Incremental Bronze JSONL | Yes | `data/incremental/bronze/` |
+| Silver Parquet + checkpoint | Yes | `data/incremental/silver/` + `_checkpoints/` |
+| Airflow metadata (DAG history) | Yes | `pgdata` Docker named volume |
+| Kafka broker volume | Yes | `kafka_kraft` Docker named volume |
+| Screenshots | Yes | `presentation/screenshots/` |
+| dbt project | Yes | `dbt/fintech/` on host |
+
+Nothing is lost by shutting down — all data is persisted to disk or Docker named volumes.

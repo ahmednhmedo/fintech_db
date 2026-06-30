@@ -1,0 +1,33 @@
+version: 2
+
+# Documentation (and a couple of light tests) for the dbt-managed reporting
+# views built on top of the gold star. These views are the only objects dbt
+# WRITES; the fact/dimensions themselves are loaded by the batch + incremental
+# SQL pipeline and exposed to dbt as sources (see _sources.yml).
+models:
+  - name: rpt_warehouse_health
+    description: >
+      One-row post-load health snapshot of the gold fact: total vs distinct
+      transaction counts, outbound/declined/fx counts, date span, and gross
+      volume. Used to validate the warehouse after each incremental load —
+      total_transactions should equal distinct_transaction_ids (no duplicate
+      facts). Aggregate-only; does not duplicate the SQL MERGE.
+    columns:
+      - name: total_transactions
+        description: Row count of dbo.fact_transactions.
+        data_tests: [not_null]
+      - name: distinct_transaction_ids
+        description: Distinct transaction_id count; equals total_transactions when there are no duplicates.
+        data_tests: [not_null]
+      - name: gross_volume_egp
+        description: Sum of abs_amount_egp across all transactions (EGP).
+
+  - name: rpt_daily_transactions
+    description: >
+      Daily transaction summary (txn/declined/fx counts, gross & average ticket
+      in EGP) over the gold star joined to dim_date. Reporting view for Power BI
+      Desktop. Existing model — documented here.
+    columns:
+      - name: full_date
+        description: Calendar date of the transactions (from dim_date).
+        data_tests: [not_null]

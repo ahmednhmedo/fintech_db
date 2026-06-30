@@ -25,6 +25,7 @@
 16. [Screenshots](#16-screenshots)
 17. [Future Improvements](#17-future-improvements)
 18. [Acknowledgements](#18-acknowledgements)
+19. [Incremental Pipeline](#19-incremental-pipeline)
 
 ---
 
@@ -593,6 +594,136 @@ See [`docs/POWER_BI.md`](docs/POWER_BI.md) for the full guide including all 21 r
 | Medium | **dbt Semantic Layer** | Formalize KPIs as dbt Metrics for a vendor-neutral semantic layer consumable by multiple BI tools. |
 | Low | **Data Masking** | Implement column-level masking on `account_id` and customer PII for non-privileged analyst access. |
 | Low | **Kubernetes** | Replace Docker Compose with Kubernetes manifests (Helm chart for Airflow) for production-scale orchestration. |
+
+---
+
+## 19. Incremental Pipeline
+
+The incremental pipeline is an **event-driven streaming layer built on top of the existing batch Gold warehouse**. It streams new transaction events row-by-row through Apache Kafka, applies the same Bronze → Silver → Gold medallion pattern incrementally, and merges results into the same `dbo.fact_transactions` table — without modifying the batch pipeline or any dimension tables.
+
+### Architecture
+
+```
+fact_transactions.csv  (simulated live source system)
+        │
+        ▼
+FastAPI  (incremental/api/source_api.py — port 8000)
+  GET /transactions/next  →  one row per call, cyclic cursor
+        │
+        ▼
+producer.py  ──►  Apache Kafka  (KRaft, topic: transactions_raw, port 9092)
+                                        │
+                                        ▼
+                              consumer.py  (manual offset commits, at-least-once)
+                                        │
+                                        ▼
+data/incremental/bronze/transactions_raw.jsonl       ← Bronze Incremental
+        │
+        │  silver_incremental.py  (Docker Spark — apache/spark:3.5.1)
+        │  • Kafka offset checkpoint (incremental, replay-safe)
+        │  • DQ validation + quarantine of bad rows
+        │  • Deduplication on transaction_id (keep earliest offset)
+        │  • Batch ID: b_<minOffset:09d>_<maxOffset:09d>
+        ▼
+data/incremental/silver/silver_batch_id=<b>/         ← Silver Incremental (Parquet)
+        │
+        │  load_silver_incremental_to_sql.py  (Windows host, Windows auth)
+        │  • Bulk load → stg.fact_transactions_stage
+        │  • EXEC stg.usp_merge_incremental_fact
+        │  • Audit log in stg.incremental_load_log (idempotency guard)
+        ▼
+SQL Server fintech_db [dbo].fact_transactions        ← MERGE (idempotent upsert)
+        │
+        │  dbt build  (same fintech project — 47 PASS)
+        ▼
+SQL Server fintech_db [reporting].*
+```
+
+### Technology Additions
+
+| Component | Technology | Purpose |
+|---|---|---|
+| Message broker | Apache Kafka KRaft (confluentinc/cp-kafka:7.8.3) | Event streaming — no ZooKeeper required |
+| Source API | FastAPI + uvicorn | Simulates a live operational source system serving CSV rows on demand |
+| Producer | confluent-kafka Python client | Publishes events to Kafka at 1 event/second; `acks=all`, idempotent |
+| Consumer | confluent-kafka Python client | Reads Kafka, writes Bronze JSONL with lineage fields; manual offset commits |
+| Silver compute | PySpark 3.5.1 (Docker) | Micro-batch DQ + dedup; offset-based incremental checkpoint |
+| SQL staging & MERGE | pyodbc + pyarrow.dataset | Bulk load to `stg.*` then `MERGE` into `dbo.fact_transactions` |
+
+### Key Design Decisions
+
+**At-least-once + MERGE = idempotent end-to-end** — Kafka delivers at-least-once; the `MERGE ON transaction_id` in SQL Server ensures no duplicate rows enter the warehouse even if an event is replayed.
+
+**Offset-based Silver checkpoint** — `data/incremental/_checkpoints/silver_offsets.json` tracks the Kafka partition high-water mark. On re-run, only records past the checkpoint are reprocessed — Silver micro-batches are cumulative and replay-safe.
+
+**Deterministic batch IDs** — Silver partitions are named `b_<minOffset:09d>_<maxOffset:09d>` (e.g., `b_000000000_000000098`). The ID is derived from the data itself, so reprocessing the same Bronze records always produces the same partition — no phantom batches on retry.
+
+**Docker Spark for Silver** — No Java is installed on the host; PySpark requires a JVM. Silver incremental always runs inside `apache/spark:3.5.1` via `docker run` — never directly on the host.
+
+**Windows Auth for SQL MERGE** — Same constraint as the batch pipeline: the SQL MERGE loader runs on the Windows host, not in a Linux container.
+
+**Dimensions are not streamed** — Only `fact_transactions` is append-heavy. All 7 dimension tables are managed by the batch pipeline and change rarely. The incremental pipeline receives fact rows that already carry the correct integer foreign keys from the source.
+
+### Folder Structure (Incremental Additions)
+
+```
+fintech-lakehouse/
+├── incremental/
+│   ├── docker-compose.yml                 # Kafka (KRaft, no ZooKeeper) — project: fintech_kafka
+│   ├── producer.py                        # FastAPI → Kafka publisher (1 event/sec)
+│   ├── consumer.py                        # Kafka → Bronze JSONL (manual offset commits)
+│   ├── silver_incremental.py              # PySpark micro-batch Silver (always via Docker)
+│   ├── load_silver_incremental_to_sql.py  # Silver Parquet → stg.* → MERGE → dbo.fact_transactions
+│   ├── requirements-incremental.txt       # confluent-kafka, fastapi, uvicorn, requests
+│   ├── README_INCREMENTAL.md              # Incremental pipeline quick-start
+│   ├── .venv-incremental/                 # Isolated venv (Python 3.11, NO pyspark)
+│   ├── api/
+│   │   └── source_api.py                  # FastAPI simulated source (GET /transactions/next)
+│   └── sql/
+│       ├── create_incremental_staging.sql  # stg schema + staging/reject/log tables
+│       └── merge_incremental_fact.sql      # Stored procedure: validate → MERGE → audit
+│
+└── data/
+    └── incremental/
+        ├── bronze/
+        │   └── transactions_raw.jsonl      # Kafka-consumed events with lineage fields
+        ├── silver/
+        │   └── silver_batch_id=<b>/        # Parquet partitions (one per Silver run)
+        ├── quarantine/                     # DQ-rejected rows from Silver
+        ├── dlq/
+        │   └── transactions_bad.jsonl      # Kafka DLQ (non-JSON poison messages)
+        └── _checkpoints/
+            └── silver_offsets.json         # Kafka offset high-water mark per partition
+```
+
+### SQL Server Additions (Incremental)
+
+| Object | Type | Purpose |
+|---|---|---|
+| `stg` | Schema | Isolated staging namespace — never directly touches `dbo.*` |
+| `stg.fact_transactions_stage` | Table | Transient landing zone for one Silver batch; truncated per run |
+| `stg.fact_transactions_reject` | Table | Quarantine for rows failing SQL-side validation; never dropped |
+| `stg.incremental_load_log` | Table | Per-batch audit log; `SUCCESS` rows block duplicate reprocessing |
+| `stg.usp_merge_incremental_fact` | Stored Procedure | Validate → MERGE → audit in a single atomic transaction |
+
+### Bronze Record Format
+
+Each line in `transactions_raw.jsonl` is a JSON object. The consumer wraps the raw payload with Kafka lineage fields:
+
+```json
+{
+  "payload": { "transaction_id": "TXN...", "date_key": 20230101, "amount_egp": 250.00, "..." },
+  "_kafka_topic": "transactions_raw",
+  "_kafka_partition": 0,
+  "_kafka_offset": 42,
+  "_consumed_at_utc": "2026-06-30T10:00:00.000Z"
+}
+```
+
+### How to Run
+
+See **[HOW_TO_RUN.md → Part 2 — Incremental Load Pipeline](HOW_TO_RUN.md)** for the full step-by-step guide:
+Kafka → FastAPI → consumer → producer → Docker Spark Silver → SQL MERGE → dbt.
 
 ---
 
